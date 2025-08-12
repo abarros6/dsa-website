@@ -1,7 +1,6 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
-import AlgorithmVisualization from '../components/AlgorithmVisualization'
-import ControlPanel from '../components/ControlPanel'
+import SimpleControlPanel from '../components/SimpleControlPanel'
 import ArrayVisualization from '../components/visualizations/ArrayVisualization'
 import StackVisualization from '../components/visualizations/StackVisualization'
 import QueueVisualization from '../components/visualizations/QueueVisualization'
@@ -135,15 +134,19 @@ function LinearStructures() {
 
       {/* Visualization Area */}
       <div className="card">
-        <div className="flex justify-between items-center mb-6">
+        <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
             {linearStructures.find(s => s.id === currentVisualization)?.title}
           </h2>
-          <ControlPanel />
         </div>
         
         <div className="min-h-[500px]">
           {CurrentComponent && <CurrentComponent />}
+        </div>
+        
+        {/* Simple Control Panel for Step-by-step playback */}
+        <div className="mt-6">
+          <SimpleControlPanel />
         </div>
       </div>
 
