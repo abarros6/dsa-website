@@ -8,6 +8,7 @@ pnpm-debug.log*
 
 # Claude files
 .claude/
+CLAUDE.md
 
 # Build outputs
 dist/
