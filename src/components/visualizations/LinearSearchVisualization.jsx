@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useApp } from '../../contexts/AppContext'
+import SearchControls from '../common/SearchControls'
+import ArrayVisualization from '../common/ArrayVisualization'
+import SearchStats from '../common/SearchStats'
+import ColorLegend from '../common/ColorLegend'
+import StepDescription from '../common/StepDescription'
 
 const SEARCH_COLORS = {
   default: '#6b7280',
@@ -145,92 +149,34 @@ export default function LinearSearchVisualization() {
 
   return (
     <div className="w-full">
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center space-x-2">
-            <label htmlFor="target" className="text-sm font-medium">
-              Search for:
-            </label>
-            <input
-              id="target"
-              type="number"
-              value={target}
-              onChange={(e) => setTarget(parseInt(e.target.value) || 0)}
-              className="w-20 px-2 py-1 border rounded-md text-center"
-            />
-          </div>
-          <button
-            onClick={handleSearch}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          >
-            Start Linear Search
-          </button>
-          <button
-            onClick={generateRandomArray}
-            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-          >
-            Random Array
-          </button>
-          <button
-            onClick={generateRandomTarget}
-            className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600"
-          >
-            Random Target
-          </button>
-        </div>
-      </div>
+      <SearchControls
+        target={target}
+        onTargetChange={setTarget}
+        onSearch={handleSearch}
+        onRandomArray={generateRandomArray}
+        onRandomTarget={generateRandomTarget}
+        searchLabel="Start Linear Search"
+      />
 
-      <div className="flex justify-center mb-6">
-        <div className="flex items-end space-x-1 p-4 bg-white rounded-lg shadow-sm">
-          {Array.isArray(array) && array.map((value, index) => (
-            <motion.div key={`bar-${index}`} className="flex flex-col items-center">
-              <div
-                className="w-10 rounded-t-md flex items-end justify-center text-white text-xs font-semibold pb-1"
-                style={{
-                  height: `${(value / Math.max(...array)) * 150 + 30}px`,
-                  backgroundColor: getBarColor(index)
-                }}
-              >
-                {value}
-              </div>
-              <div className="text-xs text-gray-500 mt-1">{index}</div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
+      <ArrayVisualization array={array} getBarColor={getBarColor} />
 
-      <div className="flex justify-center space-x-8 text-sm mb-4">
-        <span>Target: <span className="font-semibold text-yellow-600">{target}</span></span>
-        <span>Current Index: {currentIndex >= 0 ? currentIndex : '-'}</span>
-        <span>Comparisons: {comparisons}</span>
-        <span className={`font-semibold ${foundIndex >= 0 ? 'text-green-600' : searchComplete ? 'text-red-600' : 'text-gray-600'}`}>
-          Status: {foundIndex >= 0 ? `Found at index ${foundIndex}` : searchComplete ? 'Not Found' : 'Searching...'}
-        </span>
-      </div>
+      <SearchStats
+        target={target}
+        currentIndex={currentIndex}
+        comparisons={comparisons}
+        foundIndex={foundIndex}
+        searchComplete={searchComplete}
+      />
 
-      {/* Color Legend */}
-      <div className="flex justify-center space-x-6 text-xs mb-6">
-        <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 rounded" style={{ backgroundColor: SEARCH_COLORS.current }}></div>
-          <span>Current</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 rounded" style={{ backgroundColor: SEARCH_COLORS.found }}></div>
-          <span>Found</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 rounded" style={{ backgroundColor: SEARCH_COLORS.default }}></div>
-          <span>Unchecked</span>
-        </div>
-      </div>
+      <ColorLegend
+        colors={[
+          { color: SEARCH_COLORS.current, label: 'Current' },
+          { color: SEARCH_COLORS.found, label: 'Found' },
+          { color: SEARCH_COLORS.default, label: 'Unchecked' }
+        ]}
+      />
 
-      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && state.visualizationContext === 'search-linear' && (
-        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
-          <p className="text-blue-800">
-            {state.visualizationData[state.currentStep].description}
-          </p>
-        </div>
-      )}
+      <StepDescription context="search-linear" />
     </div>
   )
 }

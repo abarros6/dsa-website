@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from 'react'
+import { createContext, useContext, useReducer, useCallback } from 'react'
 
 const AppContext = createContext()
 
@@ -87,19 +87,30 @@ function appReducer(state, action) {
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState)
 
+  const setAlgorithm = useCallback((algorithm) => dispatch({ type: 'SET_ALGORITHM', payload: algorithm }), [])
+  const setVisualizationData = useCallback((data, context) => dispatch({ type: 'SET_VISUALIZATION_DATA', payload: data, context }), [])
+  const playPause = useCallback(() => dispatch({ type: 'PLAY_PAUSE' }), [])
+  const stepForward = useCallback(() => dispatch({ type: 'STEP_FORWARD' }), [])
+  const stepBackward = useCallback(() => dispatch({ type: 'STEP_BACKWARD' }), [])
+  const setStep = useCallback((step) => dispatch({ type: 'SET_STEP', payload: step }), [])
+  const setSpeed = useCallback((speed) => dispatch({ type: 'SET_SPEED', payload: speed }), [])
+  const updateSettings = useCallback((settings) => dispatch({ type: 'UPDATE_SETTINGS', payload: settings }), [])
+  const reset = useCallback(() => dispatch({ type: 'RESET' }), [])
+  const clearData = useCallback(() => dispatch({ type: 'CLEAR_DATA' }), [])
+
   const value = {
     state,
     dispatch,
-    setAlgorithm: (algorithm) => dispatch({ type: 'SET_ALGORITHM', payload: algorithm }),
-    setVisualizationData: (data, context) => dispatch({ type: 'SET_VISUALIZATION_DATA', payload: data, context }),
-    playPause: () => dispatch({ type: 'PLAY_PAUSE' }),
-    stepForward: () => dispatch({ type: 'STEP_FORWARD' }),
-    stepBackward: () => dispatch({ type: 'STEP_BACKWARD' }),
-    setStep: (step) => dispatch({ type: 'SET_STEP', payload: step }),
-    setSpeed: (speed) => dispatch({ type: 'SET_SPEED', payload: speed }),
-    updateSettings: (settings) => dispatch({ type: 'UPDATE_SETTINGS', payload: settings }),
-    reset: () => dispatch({ type: 'RESET' }),
-    clearData: () => dispatch({ type: 'CLEAR_DATA' })
+    setAlgorithm,
+    setVisualizationData,
+    playPause,
+    stepForward,
+    stepBackward,
+    setStep,
+    setSpeed,
+    updateSettings,
+    reset,
+    clearData
   }
 
   return (

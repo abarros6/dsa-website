@@ -1,4 +1,4 @@
-import { Routes, Route, Link, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useApp } from '../contexts/AppContext'
 import SimpleControlPanel from '../components/SimpleControlPanel'
@@ -6,6 +6,11 @@ import ArrayVisualization from '../components/visualizations/ArrayVisualization'
 import StackVisualization from '../components/visualizations/StackVisualization'
 import QueueVisualization from '../components/visualizations/QueueVisualization'
 import LinkedListVisualization from '../components/visualizations/LinkedListVisualization'
+import TopicOverviewGrid from '../components/common/TopicOverviewGrid'
+import BreadcrumbNavigation from '../components/common/BreadcrumbNavigation'
+import UnderDevelopmentBanner from '../components/common/UnderDevelopmentBanner'
+import AlgorithmSelector from '../components/common/AlgorithmSelector'
+import EducationalContent from '../components/common/EducationalContent'
 
 const topics = [
   {
@@ -44,23 +49,7 @@ function TopicOverview() {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {topics.map((topic) => (
-          <Link
-            key={topic.path}
-            to={topic.path}
-            className="card hover:shadow-lg transition-shadow duration-200 group"
-          >
-            <div className="text-center">
-              <div className="text-4xl mb-4">{topic.icon}</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-600">
-                {topic.title}
-              </h3>
-              <p className="text-gray-600 text-sm">{topic.description}</p>
-            </div>
-          </Link>
-        ))}
-      </div>
+      <TopicOverviewGrid topics={topics} />
     </div>
   )
 }
@@ -120,25 +109,11 @@ function LinearStructures() {
 
       {/* Structure Selection */}
       <div className="mb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {linearStructures.map((structure) => (
-            <button
-              key={structure.id}
-              onClick={() => handleVisualizationChange(structure.id)}
-              className={`flex items-center space-x-3 px-4 py-4 rounded-lg border-2 transition-all duration-200 min-w-0 ${
-                currentVisualization === structure.id
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              <span className="text-xl flex-shrink-0">{structure.icon}</span>
-              <div className="text-left min-w-0 flex-1">
-                <div className="font-semibold text-sm leading-tight">{structure.title}</div>
-                <div className="text-xs opacity-75 leading-tight">{structure.description}</div>
-              </div>
-            </button>
-          ))}
-        </div>
+        <AlgorithmSelector
+          items={linearStructures}
+          currentItem={currentVisualization}
+          onItemChange={handleVisualizationChange}
+        />
       </div>
 
       {/* Visualization Area */}
@@ -161,59 +136,62 @@ function LinearStructures() {
       </div>
 
       {/* Educational Content */}
-      <div className="mt-8 grid md:grid-cols-2 gap-6">
-        <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">Time Complexity Summary</h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="font-medium">Array Access:</span>
-              <span className="text-green-600">O(1)</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Array Insert (end):</span>
-              <span className="text-green-600">O(1) amortized</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Stack Push/Pop:</span>
-              <span className="text-green-600">O(1)</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Queue Enqueue/Dequeue:</span>
-              <span className="text-green-600">O(1)</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">LinkedList Insert (head):</span>
-              <span className="text-green-600">O(1)</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">LinkedList Search:</span>
-              <span className="text-red-600">O(n)</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">Common Applications</h3>
-          <div className="space-y-3 text-sm">
-            <div>
-              <span className="font-medium text-blue-600">Arrays:</span>
-              <span className="text-gray-600 ml-2">Collections, matrices, lookup tables</span>
-            </div>
-            <div>
-              <span className="font-medium text-purple-600">Stacks:</span>
-              <span className="text-gray-600 ml-2">Function calls, undo operations, expression evaluation</span>
-            </div>
-            <div>
-              <span className="font-medium text-green-600">Queues:</span>
-              <span className="text-gray-600 ml-2">Process scheduling, BFS, buffering</span>
-            </div>
-            <div>
-              <span className="font-medium text-indigo-600">Linked Lists:</span>
-              <span className="text-gray-600 ml-2">Dynamic memory, implementing other structures</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <EducationalContent
+        leftContent={{
+          title: "Time Complexity Summary",
+          content: (
+            <>
+              <div className="flex justify-between">
+                <span className="font-medium">Array Access:</span>
+                <span className="text-green-600">O(1)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Array Insert (end):</span>
+                <span className="text-green-600">O(1) amortized</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Stack Push/Pop:</span>
+                <span className="text-green-600">O(1)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Queue Enqueue/Dequeue:</span>
+                <span className="text-green-600">O(1)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">LinkedList Insert (head):</span>
+                <span className="text-green-600">O(1)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">LinkedList Search:</span>
+                <span className="text-red-600">O(n)</span>
+              </div>
+            </>
+          )
+        }}
+        rightContent={{
+          title: "Common Applications",
+          content: (
+            <>
+              <div>
+                <span className="font-medium text-blue-600">Arrays:</span>
+                <span className="text-gray-600 ml-2">Collections, matrices, lookup tables</span>
+              </div>
+              <div>
+                <span className="font-medium text-purple-600">Stacks:</span>
+                <span className="text-gray-600 ml-2">Function calls, undo operations, expression evaluation</span>
+              </div>
+              <div>
+                <span className="font-medium text-green-600">Queues:</span>
+                <span className="text-gray-600 ml-2">Process scheduling, BFS, buffering</span>
+              </div>
+              <div>
+                <span className="font-medium text-indigo-600">Linked Lists:</span>
+                <span className="text-gray-600 ml-2">Dynamic memory, implementing other structures</span>
+              </div>
+            </>
+          )
+        }}
+      />
     </div>
   )
 }
@@ -226,11 +204,7 @@ function Trees() {
         <p className="text-gray-600 mb-4">
           Explore binary search trees, AVL trees, and heap operations.
         </p>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-800">
-            🚧 This section is under development. Tree visualizations coming soon!
-          </p>
-        </div>
+        <UnderDevelopmentBanner feature="Tree visualizations" />
       </div>
     </div>
   )
@@ -244,11 +218,7 @@ function Graphs() {
         <p className="text-gray-600 mb-4">
           Understand graph representations, traversals, and algorithms.
         </p>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-800">
-            🚧 This section is under development. Graph visualizations coming soon!
-          </p>
-        </div>
+        <UnderDevelopmentBanner feature="Graph visualizations" />
       </div>
     </div>
   )
@@ -262,11 +232,7 @@ function HashTables() {
         <p className="text-gray-600 mb-4">
           Learn about hash functions, collision resolution, and map implementations.
         </p>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-800">
-            🚧 This section is under development. Hash table visualizations coming soon!
-          </p>
-        </div>
+        <UnderDevelopmentBanner feature="Hash table visualizations" />
       </div>
     </div>
   )
@@ -275,21 +241,17 @@ function HashTables() {
 export default function DataStructures() {
   const location = useLocation()
   const isRootPath = location.pathname === '/data-structures' || location.pathname === '/data-structures/'
-  const { clearDataIfContextChanged } = useApp()
+  const { clearData } = useApp()
 
   // Clear visualization data if coming from a different page context  
   useEffect(() => {
-    clearDataIfContextChanged('data-structures')
-  }, [clearDataIfContextChanged])
+    clearData()
+  }, [clearData])
 
   return (
     <div>
       {!isRootPath && (
-        <nav className="mb-8">
-          <Link to="/data-structures" className="text-primary-600 hover:text-primary-700">
-            ← Back to Data Structures
-          </Link>
-        </nav>
+        <BreadcrumbNavigation backTo="/data-structures" backLabel="Data Structures" />
       )}
       
       <Routes>
