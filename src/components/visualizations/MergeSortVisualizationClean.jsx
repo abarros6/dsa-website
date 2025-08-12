@@ -16,6 +16,10 @@ export default function MergeSortVisualizationClean() {
   const { state, setVisualizationData } = useApp()
   const [array, setArray] = useState([38, 27, 43, 3, 9, 82, 10])
   const [operations, setOperations] = useState(0)
+  const [dividingIndices, setDividingIndices] = useState([])
+  const [mergingIndices, setMergingIndices] = useState([])
+  const [comparingIndices, setComparingIndices] = useState([])
+  const [sortedIndices, setSortedIndices] = useState([])
 
   const generateMergeSortSteps = useCallback((inputArray) => {
     if (!Array.isArray(inputArray) || inputArray.length === 0) {
@@ -29,6 +33,10 @@ export default function MergeSortVisualizationClean() {
     steps.push({
       array: Array.from(workingArray),
       operations: 0,
+      dividingIndices: [],
+      mergingIndices: [],
+      comparingIndices: [],
+      sortedIndices: [],
       description: `Starting Merge Sort with ${workingArray.length} elements`,
       operation: 'start'
     })
@@ -41,6 +49,10 @@ export default function MergeSortVisualizationClean() {
       steps.push({
         array: Array.from(arr),
         operations: totalOperations,
+        dividingIndices: [left, mid, right],
+        mergingIndices: [],
+        comparingIndices: [],
+        sortedIndices: [],
         description: `Dividing array from ${left} to ${right} at midpoint ${mid}`,
         operation: 'divide'
       })
@@ -64,6 +76,10 @@ export default function MergeSortVisualizationClean() {
       steps.push({
         array: Array.from(arr),
         operations: totalOperations,
+        dividingIndices: [],
+        mergingIndices: Array.from({ length: right - left + 1 }, (_, i) => left + i),
+        comparingIndices: [],
+        sortedIndices: [],
         description: `Merging [${leftArr.join(', ')}] and [${rightArr.join(', ')}]`,
         operation: 'merge-start'
       })
@@ -78,6 +94,10 @@ export default function MergeSortVisualizationClean() {
           steps.push({
             array: Array.from(arr),
             operations: totalOperations,
+            dividingIndices: [],
+            mergingIndices: [],
+            comparingIndices: [k],
+            sortedIndices: [],
             description: `${leftArr[i]} ≤ ${rightArr[j]}, placed ${leftArr[i]} at position ${k}`,
             operation: 'place-left'
           })
@@ -87,6 +107,10 @@ export default function MergeSortVisualizationClean() {
           steps.push({
             array: Array.from(arr),
             operations: totalOperations,
+            dividingIndices: [],
+            mergingIndices: [],
+            comparingIndices: [k],
+            sortedIndices: [],
             description: `${rightArr[j]} < ${leftArr[i]}, placed ${rightArr[j]} at position ${k}`,
             operation: 'place-right'
           })
@@ -100,6 +124,10 @@ export default function MergeSortVisualizationClean() {
         steps.push({
           array: Array.from(arr),
           operations: totalOperations,
+          dividingIndices: [],
+          mergingIndices: [],
+          comparingIndices: [k],
+          sortedIndices: [],
           description: `Copying remaining ${leftArr[i]} from left array`,
           operation: 'copy-left'
         })
@@ -112,6 +140,10 @@ export default function MergeSortVisualizationClean() {
         steps.push({
           array: Array.from(arr),
           operations: totalOperations,
+          dividingIndices: [],
+          mergingIndices: [],
+          comparingIndices: [k],
+          sortedIndices: [],
           description: `Copying remaining ${rightArr[j]} from right array`,
           operation: 'copy-right'
         })
@@ -122,6 +154,10 @@ export default function MergeSortVisualizationClean() {
       steps.push({
         array: Array.from(arr),
         operations: totalOperations,
+        dividingIndices: [],
+        mergingIndices: [],
+        comparingIndices: [],
+        sortedIndices: Array.from({ length: right - left + 1 }, (_, i) => left + i),
         description: `Merge complete for range [${left}..${right}]`,
         operation: 'merge-complete'
       })
@@ -132,6 +168,10 @@ export default function MergeSortVisualizationClean() {
     steps.push({
       array: Array.from(workingArray),
       operations: totalOperations,
+      dividingIndices: [],
+      mergingIndices: [],
+      comparingIndices: [],
+      sortedIndices: Array.from({ length: workingArray.length }, (_, i) => i),
       description: `Merge Sort complete! Array sorted in ${totalOperations} operations`,
       operation: 'complete'
     })
@@ -162,8 +202,20 @@ export default function MergeSortVisualizationClean() {
     if (currentStep && Array.isArray(currentStep.array)) {
       setArray(currentStep.array)
       setOperations(currentStep.operations || 0)
+      setDividingIndices(currentStep.dividingIndices || [])
+      setMergingIndices(currentStep.mergingIndices || [])
+      setComparingIndices(currentStep.comparingIndices || [])
+      setSortedIndices(currentStep.sortedIndices || [])
     }
   }, [state.currentStep, state.visualizationData])
+
+  const getBarColor = (index) => {
+    if (sortedIndices.includes(index)) return SORT_COLORS.sorted
+    if (comparingIndices.includes(index)) return SORT_COLORS.comparing
+    if (mergingIndices.includes(index)) return SORT_COLORS.merging
+    if (dividingIndices.includes(index)) return SORT_COLORS.dividing
+    return SORT_COLORS.default
+  }
 
   return (
     <div className="w-full">
@@ -192,7 +244,7 @@ export default function MergeSortVisualizationClean() {
                 className="w-12 rounded-t-md flex items-end justify-center text-white text-sm font-semibold pb-1"
                 style={{
                   height: `${(value / Math.max(...array)) * 200 + 40}px`,
-                  backgroundColor: SORT_COLORS.default
+                  backgroundColor: getBarColor(index)
                 }}
               >
                 {value}

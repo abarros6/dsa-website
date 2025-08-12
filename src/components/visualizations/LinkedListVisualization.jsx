@@ -313,91 +313,87 @@ export default function LinkedListVisualization() {
     <div className="w-full">
       {/* Controls */}
       <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Insert Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Insert</label>
-            <div className="flex space-x-2">
+            <div className="space-y-2 sm:space-y-0 sm:flex sm:space-x-2">
               <input
                 type="number"
                 id="insert-position"
                 placeholder="Position"
-                className="w-20 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                className="w-full sm:w-20 px-3 py-2 border border-gray-300 rounded-md text-sm"
                 min="0"
               />
               <input
                 type="number"
                 id="insert-value"
                 placeholder="Value"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                className="w-full sm:flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
               />
-              <button
-                onClick={() => {
-                  const position = document.getElementById('insert-position').value || '0'
-                  const value = document.getElementById('insert-value').value
-                  if (value !== '') {
-                    handleInsert(position, value)
-                    document.getElementById('insert-position').value = ''
-                    document.getElementById('insert-value').value = ''
-                  }
-                }}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
-              >
-                Insert
-              </button>
             </div>
+            <button
+              onClick={() => {
+                const position = document.getElementById('insert-position').value || '0'
+                const value = document.getElementById('insert-value').value
+                if (value !== '') {
+                  handleInsert(position, value)
+                  document.getElementById('insert-position').value = ''
+                  document.getElementById('insert-value').value = ''
+                }
+              }}
+              className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
+            >
+              Insert
+            </button>
           </div>
 
           {/* Delete Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Delete</label>
-            <div className="flex space-x-2">
-              <input
-                type="number"
-                id="delete-value"
-                placeholder="Value"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
-              />
-              <button
-                onClick={() => {
-                  const value = document.getElementById('delete-value').value
-                  if (value !== '') {
-                    handleDelete(value)
-                    document.getElementById('delete-value').value = ''
-                  }
-                }}
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm"
-                disabled={nodes.length === 0}
-              >
-                Delete
-              </button>
-            </div>
+            <input
+              type="number"
+              id="delete-value"
+              placeholder="Value"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            />
+            <button
+              onClick={() => {
+                const value = document.getElementById('delete-value').value
+                if (value !== '') {
+                  handleDelete(value)
+                  document.getElementById('delete-value').value = ''
+                }
+              }}
+              className="w-full px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm"
+              disabled={nodes.length === 0}
+            >
+              Delete
+            </button>
           </div>
 
           {/* Search Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Search</label>
-            <div className="flex space-x-2">
-              <input
-                type="number"
-                id="search-value"
-                placeholder="Value"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
-              />
-              <button
-                onClick={() => {
-                  const value = document.getElementById('search-value').value
-                  if (value !== '') {
-                    handleSearch(value)
-                    document.getElementById('search-value').value = ''
-                  }
-                }}
-                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm"
-                disabled={nodes.length === 0}
-              >
-                Search
-              </button>
-            </div>
+            <input
+              type="number"
+              id="search-value"
+              placeholder="Value"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            />
+            <button
+              onClick={() => {
+                const value = document.getElementById('search-value').value
+                if (value !== '') {
+                  handleSearch(value)
+                  document.getElementById('search-value').value = ''
+                }
+              }}
+              className="w-full px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm"
+              disabled={nodes.length === 0}
+            >
+              Search
+            </button>
           </div>
 
           {/* Utility Controls */}

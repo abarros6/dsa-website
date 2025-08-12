@@ -216,36 +216,35 @@ export default function QueueVisualization() {
     <div className="w-full">
       {/* Controls */}
       <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {/* Enqueue Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Enqueue</label>
-            <div className="flex space-x-2">
-              <input
-                type="number"
-                id="enqueue-value"
-                placeholder="Value"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
-              />
-              <button
-                onClick={() => {
-                  const value = document.getElementById('enqueue-value').value
-                  if (value !== '') {
-                    handleEnqueue(value)
-                    document.getElementById('enqueue-value').value = ''
-                  }
-                }}
-                className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 text-sm"
-                disabled={queue.length >= maxSize}
-              >
-                Add
-              </button>
-            </div>
+            <input
+              type="number"
+              id="enqueue-value"
+              placeholder="Value"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            />
+            <button
+              onClick={() => {
+                const value = document.getElementById('enqueue-value').value
+                if (value !== '') {
+                  handleEnqueue(value)
+                  document.getElementById('enqueue-value').value = ''
+                }
+              }}
+              className="w-full px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 text-sm"
+              disabled={queue.length >= maxSize}
+            >
+              Add
+            </button>
           </div>
 
           {/* Dequeue Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Dequeue</label>
+            <div className="h-10"></div>
             <button
               onClick={handleDequeue}
               className="w-full px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm disabled:bg-gray-300"
@@ -258,6 +257,7 @@ export default function QueueVisualization() {
           {/* Front Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Front</label>
+            <div className="h-10"></div>
             <button
               onClick={handleFront}
               className="w-full px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm disabled:bg-gray-300"
@@ -270,6 +270,7 @@ export default function QueueVisualization() {
           {/* Rear Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Rear</label>
+            <div className="h-10"></div>
             <button
               onClick={handleRear}
               className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm disabled:bg-gray-300"
@@ -282,6 +283,7 @@ export default function QueueVisualization() {
           {/* Utility Controls */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Utilities</label>
+            <div className="h-10"></div>
             <div className="flex space-x-2">
               <button
                 onClick={generateSampleQueue}

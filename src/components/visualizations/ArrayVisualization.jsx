@@ -148,12 +148,12 @@ export default function ArrayVisualization() {
           {/* Insert Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Insert</label>
-            <div className="flex space-x-2">
+            <div className="space-y-2 sm:space-y-0 sm:flex sm:space-x-2">
               <input
                 type="number"
                 id="insert-index"
                 placeholder="Index"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                className="w-full sm:w-20 px-3 py-2 border border-gray-300 rounded-md text-sm"
                 min="0"
                 max={array.length}
               />
@@ -161,54 +161,52 @@ export default function ArrayVisualization() {
                 type="number"
                 id="insert-value"
                 placeholder="Value"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                className="w-full sm:flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
               />
-              <button
-                onClick={() => {
-                  const index = document.getElementById('insert-index').value
-                  const value = document.getElementById('insert-value').value
-                  if (index !== '' && value !== '') {
-                    handleInsert(index, value)
-                  }
-                }}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
-              >
-                Insert
-              </button>
             </div>
+            <button
+              onClick={() => {
+                const index = document.getElementById('insert-index').value
+                const value = document.getElementById('insert-value').value
+                if (index !== '' && value !== '') {
+                  handleInsert(index, value)
+                }
+              }}
+              className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
+            >
+              Insert
+            </button>
           </div>
 
           {/* Search Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Search</label>
-            <div className="flex space-x-2">
-              <input
-                type="number"
-                id="search-value"
-                placeholder="Value"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
-              />
-              <button
-                onClick={() => {
-                  const value = document.getElementById('search-value').value
-                  if (value !== '') {
-                    handleSearch(value)
-                  }
-                }}
-                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm"
-              >
-                Search
-              </button>
-            </div>
+            <input
+              type="number"
+              id="search-value"
+              placeholder="Value"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            />
+            <button
+              onClick={() => {
+                const value = document.getElementById('search-value').value
+                if (value !== '') {
+                  handleSearch(value)
+                }
+              }}
+              className="w-full px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm"
+            >
+              Search
+            </button>
           </div>
 
           {/* Utility Controls */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Utilities</label>
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 mb-2">
               <button
                 onClick={generateRandomArray}
-                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 text-sm"
+                className="flex-1 px-3 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 text-sm"
               >
                 Random
               </button>
@@ -220,26 +218,27 @@ export default function ArrayVisualization() {
                 min={array.length}
                 max="20"
               />
-              <button
-                onClick={() => {
-                  const newCap = document.getElementById('new-capacity').value
-                  if (newCap !== '') {
-                    handleResize(newCap)
-                  }
-                }}
-                className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 text-sm"
-              >
-                Resize
-              </button>
             </div>
+            <button
+              onClick={() => {
+                const newCap = document.getElementById('new-capacity').value
+                if (newCap !== '') {
+                  handleResize(newCap)
+                }
+              }}
+              className="w-full px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 text-sm"
+            >
+              Resize
+            </button>
           </div>
         </div>
       </div>
 
       {/* Array Visualization */}
       <div className="flex flex-col items-center space-y-4">
-        <div className="flex items-center space-x-1 p-4 bg-white rounded-lg shadow-sm overflow-x-auto">
-          {Array.from({ length: capacity }, (_, index) => {
+        <div className="w-full overflow-x-auto">
+          <div className="flex items-center justify-center space-x-1 p-4 pb-8 bg-white rounded-lg shadow-sm min-w-max">
+            {Array.from({ length: capacity }, (_, index) => {
             const hasValue = index < array.length
             const value = hasValue ? array[index] : null
             const isHighlighted = highlightedIndices.includes(index)
@@ -274,6 +273,7 @@ export default function ArrayVisualization() {
               </motion.div>
             )
           })}
+          </div>
         </div>
 
         {/* Array Info */}

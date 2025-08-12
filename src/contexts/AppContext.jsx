@@ -69,6 +69,13 @@ function appReducer(state, action) {
         currentStep: 0,
         isPlaying: false
       }
+    case 'CLEAR_DATA':
+      return {
+        ...state,
+        visualizationData: [],
+        currentStep: 0,
+        isPlaying: false
+      }
     default:
       return state
   }
@@ -88,7 +95,8 @@ export function AppProvider({ children }) {
     setStep: (step) => dispatch({ type: 'SET_STEP', payload: step }),
     setSpeed: (speed) => dispatch({ type: 'SET_SPEED', payload: speed }),
     updateSettings: (settings) => dispatch({ type: 'UPDATE_SETTINGS', payload: settings }),
-    reset: () => dispatch({ type: 'RESET' })
+    reset: () => dispatch({ type: 'RESET' }),
+    clearData: () => dispatch({ type: 'CLEAR_DATA' })
   }
 
   return (

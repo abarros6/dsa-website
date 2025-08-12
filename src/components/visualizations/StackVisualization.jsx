@@ -154,36 +154,35 @@ export default function StackVisualization() {
     <div className="w-full">
       {/* Controls */}
       <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Push Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Push</label>
-            <div className="flex space-x-2">
-              <input
-                type="number"
-                id="push-value"
-                placeholder="Value"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
-              />
-              <button
-                onClick={() => {
-                  const value = document.getElementById('push-value').value
-                  if (value !== '') {
-                    handlePush(value)
-                    document.getElementById('push-value').value = ''
-                  }
-                }}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
-                disabled={stack.length >= maxSize}
-              >
-                Push
-              </button>
-            </div>
+            <input
+              type="number"
+              id="push-value"
+              placeholder="Value"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            />
+            <button
+              onClick={() => {
+                const value = document.getElementById('push-value').value
+                if (value !== '') {
+                  handlePush(value)
+                  document.getElementById('push-value').value = ''
+                }
+              }}
+              className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
+              disabled={stack.length >= maxSize}
+            >
+              Push
+            </button>
           </div>
 
           {/* Pop Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Pop</label>
+            <div className="h-10"></div>
             <button
               onClick={handlePop}
               className="w-full px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm disabled:bg-gray-300"
@@ -196,6 +195,7 @@ export default function StackVisualization() {
           {/* Peek Control */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Peek</label>
+            <div className="h-10"></div>
             <button
               onClick={handlePeek}
               className="w-full px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm disabled:bg-gray-300"
@@ -208,6 +208,7 @@ export default function StackVisualization() {
           {/* Utility Controls */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Utilities</label>
+            <div className="h-10"></div>
             <div className="flex space-x-2">
               <button
                 onClick={generateSampleStack}

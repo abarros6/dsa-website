@@ -1,5 +1,6 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
+import { useApp } from '../contexts/AppContext'
 import SimpleControlPanel from '../components/SimpleControlPanel'
 import BubbleSortVisualization from '../components/visualizations/BubbleSortVisualizationClean'
 import SelectionSortVisualization from '../components/visualizations/SelectionSortVisualizationClean'
@@ -68,8 +69,65 @@ function TopicOverview() {
   )
 }
 
+function getSearchPseudocode(algorithm) {
+  const pseudocodes = {
+    linear: `function linearSearch(array, target):
+    for i = 0 to length(array)-1:
+        if array[i] == target:
+            return i
+    return -1  // Not found`,
+    
+    binary: `function binarySearch(sortedArray, target):
+    left = 0
+    right = length(sortedArray) - 1
+    
+    while left <= right:
+        mid = (left + right) / 2
+        
+        if sortedArray[mid] == target:
+            return mid
+        else if sortedArray[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return -1  // Not found`,
+    
+    hash: `function hashSearch(hashTable, target):
+    hashValue = hashFunction(target)
+    
+    if hashTable[hashValue] == target:
+        return hashValue
+    else:
+        // Handle collision resolution
+        return handleCollision(hashTable, target, hashValue)
+
+function hashFunction(key):
+    return key % tableSize
+
+function handleCollision(table, key, index):
+    // Linear probing example
+    while table[index] != null and table[index] != key:
+        index = (index + 1) % tableSize
+    
+    if table[index] == key:
+        return index
+    return -1  // Not found`
+  }
+  
+  return pseudocodes[algorithm] || 'Pseudocode not available'
+}
+
 function SearchingAlgorithms() {
   const [currentAlgorithm, setCurrentAlgorithm] = useState('linear')
+  const { clearData } = useApp()
+
+  const handleAlgorithmChange = (newAlgorithm) => {
+    if (newAlgorithm !== currentAlgorithm) {
+      clearData()
+      setCurrentAlgorithm(newAlgorithm)
+    }
+  }
 
   const searchingAlgorithms = [
     {
@@ -112,28 +170,26 @@ function SearchingAlgorithms() {
 
       {/* Algorithm Selection */}
       <div className="mb-8">
-        <div className="flex flex-wrap gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {searchingAlgorithms.map((algorithm) => (
             <button
               key={algorithm.id}
-              onClick={() => setCurrentAlgorithm(algorithm.id)}
-              className={`flex items-center space-x-3 px-6 py-4 rounded-lg border-2 transition-all duration-200 ${
+              onClick={() => handleAlgorithmChange(algorithm.id)}
+              className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all duration-200 min-w-0 ${
                 currentAlgorithm === algorithm.id
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
                   : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
               }`}
             >
-              <span className="text-2xl">{algorithm.icon}</span>
-              <div className="text-left">
-                <div className="font-semibold">{algorithm.title}</div>
-                <div className="text-sm opacity-75">{algorithm.description}</div>
-                <div className="flex items-center space-x-2 mt-1">
-                  <span className={`text-xs px-2 py-1 rounded ${
-                    algorithm.complexity.includes('n') ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
-                  }`}>
-                    {algorithm.complexity}
-                  </span>
-                </div>
+              <span className="text-3xl mb-2">{algorithm.icon}</span>
+              <div className="text-center">
+                <div className="font-semibold text-sm mb-1">{algorithm.title}</div>
+                <div className="text-xs opacity-75 mb-2 leading-tight">{algorithm.description}</div>
+                <span className={`text-xs px-2 py-1 rounded ${
+                  algorithm.complexity.includes('n') ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
+                }`}>
+                  {algorithm.complexity}
+                </span>
               </div>
             </button>
           ))}
@@ -149,14 +205,26 @@ function SearchingAlgorithms() {
           <p className="text-gray-600 mt-1">{currentAlgorithmInfo?.description}</p>
         </div>
         
-        <div className="min-h-[600px]">
+        <div className="min-h-[400px]">
           {CurrentComponent && <CurrentComponent />}
         </div>
         
         {/* Simple Control Panel for Step-by-step playback */}
         {currentAlgorithm !== 'hash' && (
-          <div className="mt-6">
+          <div className="mt-2">
             <SimpleControlPanel />
+          </div>
+        )}
+
+        {/* Pseudocode Section */}
+        {currentAlgorithmInfo && (
+          <div className="mt-6 card">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              {currentAlgorithmInfo.title} - Pseudocode
+            </h3>
+            <div className="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+              <pre>{getSearchPseudocode(currentAlgorithm)}</pre>
+            </div>
           </div>
         )}
       </div>
@@ -242,8 +310,105 @@ function SearchingAlgorithms() {
   )
 }
 
+function getSortingPseudocode(algorithm) {
+  const pseudocodes = {
+    bubble: `function bubbleSort(array):
+    n = length(array)
+    for i = 0 to n-1:
+        swapped = false
+        for j = 0 to n-i-2:
+            if array[j] > array[j+1]:
+                swap(array[j], array[j+1])
+                swapped = true
+        if not swapped:
+            break
+    return array`,
+    
+    selection: `function selectionSort(array):
+    n = length(array)
+    for i = 0 to n-1:
+        minIndex = i
+        for j = i+1 to n-1:
+            if array[j] < array[minIndex]:
+                minIndex = j
+        if minIndex != i:
+            swap(array[i], array[minIndex])
+    return array`,
+    
+    insertion: `function insertionSort(array):
+    for i = 1 to length(array)-1:
+        key = array[i]
+        j = i - 1
+        while j >= 0 and array[j] > key:
+            array[j+1] = array[j]
+            j = j - 1
+        array[j+1] = key
+    return array`,
+    
+    merge: `function mergeSort(array):
+    if length(array) <= 1:
+        return array
+    
+    mid = length(array) / 2
+    left = mergeSort(array[0...mid-1])
+    right = mergeSort(array[mid...end])
+    
+    return merge(left, right)
+
+function merge(left, right):
+    result = []
+    i = 0, j = 0
+    
+    while i < length(left) and j < length(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i = i + 1
+        else:
+            result.append(right[j])
+            j = j + 1
+    
+    while i < length(left):
+        result.append(left[i])
+        i = i + 1
+    
+    while j < length(right):
+        result.append(right[j])
+        j = j + 1
+    
+    return result`,
+    
+    quick: `function quickSort(array, low, high):
+    if low < high:
+        pivotIndex = partition(array, low, high)
+        quickSort(array, low, pivotIndex - 1)
+        quickSort(array, pivotIndex + 1, high)
+
+function partition(array, low, high):
+    pivot = array[high]
+    i = low - 1
+    
+    for j = low to high-1:
+        if array[j] <= pivot:
+            i = i + 1
+            swap(array[i], array[j])
+    
+    swap(array[i+1], array[high])
+    return i + 1`
+  }
+  
+  return pseudocodes[algorithm] || 'Pseudocode not available'
+}
+
 function SortingAlgorithms() {
   const [currentAlgorithm, setCurrentAlgorithm] = useState('bubble')
+  const { clearData } = useApp()
+
+  const handleAlgorithmChange = (newAlgorithm) => {
+    if (newAlgorithm !== currentAlgorithm) {
+      clearData()
+      setCurrentAlgorithm(newAlgorithm)
+    }
+  }
 
   const sortingAlgorithms = [
     {
@@ -307,22 +472,22 @@ function SortingAlgorithms() {
 
       {/* Algorithm Selection */}
       <div className="mb-8">
-        <div className="flex flex-wrap gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {sortingAlgorithms.map((algorithm) => (
             <button
               key={algorithm.id}
-              onClick={() => setCurrentAlgorithm(algorithm.id)}
-              className={`flex items-center space-x-3 px-6 py-4 rounded-lg border-2 transition-all duration-200 ${
+              onClick={() => handleAlgorithmChange(algorithm.id)}
+              className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all duration-200 min-w-0 ${
                 currentAlgorithm === algorithm.id
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
                   : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
               }`}
             >
-              <span className="text-2xl">{algorithm.icon}</span>
-              <div className="text-left">
-                <div className="font-semibold">{algorithm.title}</div>
-                <div className="text-sm opacity-75">{algorithm.description}</div>
-                <div className="flex items-center space-x-2 mt-1">
+              <span className="text-3xl mb-2">{algorithm.icon}</span>
+              <div className="text-center">
+                <div className="font-semibold text-sm mb-1">{algorithm.title}</div>
+                <div className="text-xs opacity-75 mb-2 leading-tight">{algorithm.description}</div>
+                <div className="flex flex-wrap justify-center gap-1">
                   <span className={`text-xs px-2 py-1 rounded ${
                     algorithm.complexity.includes('n²') ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
                   }`}>
@@ -349,14 +514,26 @@ function SortingAlgorithms() {
           <p className="text-gray-600 mt-1">{currentAlgorithmInfo?.description}</p>
         </div>
         
-        <div className="min-h-[600px]">
+        <div className="min-h-[400px]">
           {CurrentComponent && <CurrentComponent />}
         </div>
         
         {/* Simple Control Panel for Step-by-step playback */}
-        <div className="mt-6">
+        <div className="mt-2">
           <SimpleControlPanel />
         </div>
+
+        {/* Pseudocode Section */}
+        {currentAlgorithmInfo && (
+          <div className="mt-6 card">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              {currentAlgorithmInfo.title} - Pseudocode
+            </h3>
+            <div className="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+              <pre>{getSortingPseudocode(currentAlgorithm)}</pre>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Algorithm Comparison Table */}

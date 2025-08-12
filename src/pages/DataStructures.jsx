@@ -1,5 +1,6 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
+import { useApp } from '../contexts/AppContext'
 import SimpleControlPanel from '../components/SimpleControlPanel'
 import ArrayVisualization from '../components/visualizations/ArrayVisualization'
 import StackVisualization from '../components/visualizations/StackVisualization'
@@ -66,6 +67,14 @@ function TopicOverview() {
 
 function LinearStructures() {
   const [currentVisualization, setCurrentVisualization] = useState('array')
+  const { clearData } = useApp()
+
+  const handleVisualizationChange = (newVisualization) => {
+    if (newVisualization !== currentVisualization) {
+      clearData()
+      setCurrentVisualization(newVisualization)
+    }
+  }
 
   const linearStructures = [
     {
@@ -111,21 +120,21 @@ function LinearStructures() {
 
       {/* Structure Selection */}
       <div className="mb-8">
-        <div className="flex flex-wrap gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {linearStructures.map((structure) => (
             <button
               key={structure.id}
-              onClick={() => setCurrentVisualization(structure.id)}
-              className={`flex items-center space-x-3 px-6 py-4 rounded-lg border-2 transition-all duration-200 ${
+              onClick={() => handleVisualizationChange(structure.id)}
+              className={`flex items-center space-x-3 px-4 py-4 rounded-lg border-2 transition-all duration-200 min-w-0 ${
                 currentVisualization === structure.id
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
                   : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
               }`}
             >
-              <span className="text-2xl">{structure.icon}</span>
-              <div className="text-left">
-                <div className="font-semibold">{structure.title}</div>
-                <div className="text-sm opacity-75">{structure.description}</div>
+              <span className="text-xl flex-shrink-0">{structure.icon}</span>
+              <div className="text-left min-w-0 flex-1">
+                <div className="font-semibold text-sm leading-tight">{structure.title}</div>
+                <div className="text-xs opacity-75 leading-tight">{structure.description}</div>
               </div>
             </button>
           ))}
@@ -140,7 +149,7 @@ function LinearStructures() {
           </h2>
         </div>
         
-        <div className="min-h-[500px]">
+        <div className="min-h-[400px]">
           {CurrentComponent && <CurrentComponent />}
         </div>
         
