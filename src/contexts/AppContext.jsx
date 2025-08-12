@@ -8,6 +8,7 @@ const initialState = {
   isPlaying: false,
   currentStep: 0,
   speed: 1,
+  visualizationContext: null, // tracks which type of visualization is active
   visualizationSettings: {
     showCode: true,
     showComplexity: true,
@@ -28,7 +29,8 @@ function appReducer(state, action) {
       return {
         ...state,
         visualizationData: action.payload,
-        currentStep: 0
+        currentStep: 0,
+        visualizationContext: action.context || state.visualizationContext
       }
     case 'PLAY_PAUSE':
       return {
@@ -74,7 +76,8 @@ function appReducer(state, action) {
         ...state,
         visualizationData: [],
         currentStep: 0,
-        isPlaying: false
+        isPlaying: false,
+        visualizationContext: null
       }
     default:
       return state
@@ -88,7 +91,7 @@ export function AppProvider({ children }) {
     state,
     dispatch,
     setAlgorithm: (algorithm) => dispatch({ type: 'SET_ALGORITHM', payload: algorithm }),
-    setVisualizationData: (data) => dispatch({ type: 'SET_VISUALIZATION_DATA', payload: data }),
+    setVisualizationData: (data, context) => dispatch({ type: 'SET_VISUALIZATION_DATA', payload: data, context }),
     playPause: () => dispatch({ type: 'PLAY_PAUSE' }),
     stepForward: () => dispatch({ type: 'STEP_FORWARD' }),
     stepBackward: () => dispatch({ type: 'STEP_BACKWARD' }),

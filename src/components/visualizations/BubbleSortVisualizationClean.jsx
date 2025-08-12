@@ -1,30 +1,16 @@
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useApp } from '../../contexts/AppContext'
+import { useCallback } from 'react'
+import SortingVisualizationBase from '../common/SortingVisualizationBase'
 
 const SORT_COLORS = {
   default: '#6b7280',
-  comparing: '#f59e0b',
+  comparing: '#f59e0b', 
   swapping: '#ef4444',
-  sorted: '#10b981',
-  current: '#3b82f6'
+  sorted: '#10b981'
 }
 
 export default function BubbleSortVisualizationClean() {
-  const { state, setVisualizationData } = useApp()
-  const [array, setArray] = useState([64, 34, 25, 12, 22, 11, 90])
-  const [comparingIndices, setComparingIndices] = useState([])
-  const [swappingIndices, setSwappingIndices] = useState([])
-  const [sortedIndices, setSortedIndices] = useState([])
-  const [currentPass, setCurrentPass] = useState(0)
-  const [comparisons, setComparisons] = useState(0)
-  const [swaps, setSwaps] = useState(0)
-
   const generateBubbleSortSteps = useCallback((inputArray) => {
-    console.log('Starting bubble sort with array:', inputArray)
-    
     if (!Array.isArray(inputArray) || inputArray.length === 0) {
-      console.error('Invalid input array')
       return []
     }
 
@@ -118,107 +104,31 @@ export default function BubbleSortVisualizationClean() {
       operation: 'complete'
     })
 
-    console.log('Generated', steps.length, 'steps')
     return steps
   }, [])
 
-  const handleSort = () => {
-    if (!Array.isArray(array) || array.length === 0) {
-      console.error('Invalid array for sorting')
-      return
-    }
-    
-    try {
-      const steps = generateBubbleSortSteps(array)
-      setVisualizationData(steps)
-    } catch (error) {
-      console.error('Error generating steps:', error)
-    }
-  }
-
-  const generateRandomArray = () => {
-    const newArray = Array.from({ length: 7 }, () => Math.floor(Math.random() * 100))
-    setArray(newArray)
-  }
-
-  useEffect(() => {
-    const currentStep = state.visualizationData[state.currentStep]
-    if (currentStep && Array.isArray(currentStep.array)) {
-      setArray(currentStep.array)
-      setComparingIndices(currentStep.comparingIndices || [])
-      setSwappingIndices(currentStep.swappingIndices || [])
-      setSortedIndices(currentStep.sortedIndices || [])
-      setCurrentPass(currentStep.currentPass || 0)
-      setComparisons(currentStep.comparisons || 0)
-      setSwaps(currentStep.swaps || 0)
-    }
-  }, [state.currentStep, state.visualizationData])
-
-  const getBarColor = (index) => {
-    if (swappingIndices.includes(index)) return SORT_COLORS.swapping
-    if (comparingIndices.includes(index)) return SORT_COLORS.comparing
-    if (sortedIndices.includes(index)) return SORT_COLORS.sorted
+  const getBarColor = (index, algorithmState) => {
+    if (algorithmState.swappingIndices?.includes(index)) return SORT_COLORS.swapping
+    if (algorithmState.comparingIndices?.includes(index)) return SORT_COLORS.comparing
+    if (algorithmState.sortedIndices?.includes(index)) return SORT_COLORS.sorted
     return SORT_COLORS.default
   }
 
-  return (
-    <div className="w-full">
-      {/* Controls */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <div className="flex space-x-4">
-          <button
-            onClick={handleSort}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          >
-            Start Bubble Sort
-          </button>
-          <button
-            onClick={generateRandomArray}
-            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-          >
-            Random Array
-          </button>
-        </div>
-      </div>
-
-      {/* Array Visualization */}
-      <div className="flex justify-center mb-6">
-        <div className="flex items-end space-x-2 p-4 bg-white rounded-lg shadow-sm">
-          {Array.isArray(array) && array.map((value, index) => (
-            <motion.div
-              key={`bar-${index}`}
-              className="flex flex-col items-center"
-            >
-              <div
-                className="w-12 rounded-t-md flex items-end justify-center text-white text-sm font-semibold pb-1"
-                style={{
-                  height: `${(value / Math.max(...array)) * 200 + 40}px`,
-                  backgroundColor: getBarColor(index)
-                }}
-              >
-                {value}
-              </div>
-              <div className="text-xs text-gray-500 mt-1">{index}</div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="flex justify-center space-x-6 text-sm">
-        <span>Pass: {currentPass}</span>
-        <span>Comparisons: {comparisons}</span>
-        <span>Swaps: {swaps}</span>
-      </div>
-
-      {/* Description */}
-      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && (
-        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
-          <p className="text-blue-800">
-            {state.visualizationData[state.currentStep].description}
-          </p>
-        </div>
-      )}
+  const renderStats = (algorithmState) => (
+    <div className="flex justify-center space-x-6 text-sm">
+      <span>Pass: {algorithmState.currentPass || 0}</span>
+      <span>Comparisons: {algorithmState.comparisons || 0}</span>
+      <span>Swaps: {algorithmState.swaps || 0}</span>
     </div>
+  )
+
+  return (
+    <SortingVisualizationBase
+      algorithmName="Bubble Sort"
+      generateSteps={generateBubbleSortSteps}
+      getBarColor={getBarColor}
+      renderStats={renderStats}
+      contextKey="bubble"
+    />
   )
 }

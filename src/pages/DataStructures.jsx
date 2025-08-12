@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useApp } from '../contexts/AppContext'
 import SimpleControlPanel from '../components/SimpleControlPanel'
 import ArrayVisualization from '../components/visualizations/ArrayVisualization'
@@ -154,6 +154,7 @@ function LinearStructures() {
         </div>
         
         {/* Simple Control Panel for Step-by-step playback */}
+        {/* need to only render this if the user attempts a search */}
         <div className="mt-6">
           <SimpleControlPanel />
         </div>
@@ -274,6 +275,12 @@ function HashTables() {
 export default function DataStructures() {
   const location = useLocation()
   const isRootPath = location.pathname === '/data-structures' || location.pathname === '/data-structures/'
+  const { clearDataIfContextChanged } = useApp()
+
+  // Clear visualization data if coming from a different page context  
+  useEffect(() => {
+    clearDataIfContextChanged('data-structures')
+  }, [clearDataIfContextChanged])
 
   return (
     <div>

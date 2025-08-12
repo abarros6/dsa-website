@@ -166,7 +166,7 @@ export default function QuickSortVisualizationClean() {
     
     try {
       const steps = generateQuickSortSteps(array)
-      setVisualizationData(steps)
+      setVisualizationData(steps, 'sorting-quick')
     } catch (error) {
       console.error('Error generating steps:', error)
     }
@@ -238,7 +238,7 @@ export default function QuickSortVisualizationClean() {
         <span>Sorted: {sortedIndices.length}</span>
       </div>
 
-      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && (
+      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && state.visualizationContext === 'sorting-quick' && (
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
           <p className="text-blue-800">
             {state.visualizationData[state.currentStep].description}

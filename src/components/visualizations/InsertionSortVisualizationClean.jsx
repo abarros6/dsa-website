@@ -137,7 +137,7 @@ export default function InsertionSortVisualizationClean() {
     
     try {
       const steps = generateInsertionSortSteps(array)
-      setVisualizationData(steps)
+      setVisualizationData(steps, 'sorting-insertion')
     } catch (error) {
       console.error('Error generating steps:', error)
     }
@@ -212,7 +212,7 @@ export default function InsertionSortVisualizationClean() {
         <span>Shifts: {shifts}</span>
       </div>
 
-      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && (
+      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && state.visualizationContext === 'sorting-insertion' && (
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
           <p className="text-blue-800">
             {state.visualizationData[state.currentStep].description}

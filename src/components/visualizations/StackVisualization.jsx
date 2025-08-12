@@ -112,21 +112,21 @@ export default function StackVisualization() {
   const handlePush = (value) => {
     const op = { type: 'push', value: parseInt(value) }
     const steps = generateVisualizationData(stack, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'stack-push')
     setOperation(op)
   }
 
   const handlePop = () => {
     const op = { type: 'pop' }
     const steps = generateVisualizationData(stack, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'stack-pop')
     setOperation(op)
   }
 
   const handlePeek = () => {
     const op = { type: 'peek' }
     const steps = generateVisualizationData(stack, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'stack-peek')
     setOperation(op)
   }
 
@@ -306,7 +306,8 @@ export default function StackVisualization() {
 
         {/* Current Operation Description */}
         <AnimatePresence>
-          {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && (
+          {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && 
+            state.visualizationContext?.startsWith('stack-') && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

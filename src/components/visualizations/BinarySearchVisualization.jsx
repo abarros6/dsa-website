@@ -151,7 +151,7 @@ export default function BinarySearchVisualization() {
     
     try {
       const steps = generateBinarySearchSteps(array, target)
-      setVisualizationData(steps)
+      setVisualizationData(steps, 'search-binary')
     } catch (error) {
       console.error('Error generating search steps:', error)
     }
@@ -310,7 +310,7 @@ export default function BinarySearchVisualization() {
         </div>
       </div>
 
-      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && (
+      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && state.visualizationContext === 'search-binary' && (
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
           <p className="text-blue-800">
             {state.visualizationData[state.currentStep].description}

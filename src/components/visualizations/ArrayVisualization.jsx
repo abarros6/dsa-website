@@ -103,21 +103,21 @@ export default function ArrayVisualization() {
   const handleInsert = (index, value) => {
     const op = { type: 'insert', index: parseInt(index), value: parseInt(value) }
     const steps = generateVisualizationData(array, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'array-insert')
     setOperation(op)
   }
 
   const handleSearch = (value) => {
     const op = { type: 'search', value: parseInt(value) }
     const steps = generateVisualizationData(array, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'array-search')
     setOperation(op)
   }
 
   const handleResize = (newCapacity) => {
     const op = { type: 'resize', newCapacity: parseInt(newCapacity) }
     const steps = generateVisualizationData(array, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'array-resize')
     setOperation(op)
     setCapacity(parseInt(newCapacity))
   }
@@ -285,7 +285,8 @@ export default function ArrayVisualization() {
 
         {/* Current Operation Description */}
         <AnimatePresence>
-          {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && (
+          {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && 
+          state.visualizationContext?.startsWith('array-') && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

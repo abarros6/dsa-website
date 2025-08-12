@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useApp } from '../contexts/AppContext'
 import SimpleControlPanel from '../components/SimpleControlPanel'
 import BubbleSortVisualization from '../components/visualizations/BubbleSortVisualizationClean'

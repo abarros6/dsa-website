@@ -146,7 +146,7 @@ export default function SelectionSortVisualizationClean() {
     
     try {
       const steps = generateSelectionSortSteps(array)
-      setVisualizationData(steps)
+      setVisualizationData(steps, 'sorting-selection')
     } catch (error) {
       console.error('Error generating steps:', error)
     }
@@ -222,7 +222,7 @@ export default function SelectionSortVisualizationClean() {
         <span>Swaps: {swaps}</span>
       </div>
 
-      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && (
+      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && state.visualizationContext === 'sorting-selection' && (
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
           <p className="text-blue-800">
             {state.visualizationData[state.currentStep].description}

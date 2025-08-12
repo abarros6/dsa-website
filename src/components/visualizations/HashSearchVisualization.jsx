@@ -190,7 +190,7 @@ export default function HashSearchVisualization() {
     
     try {
       const steps = generateHashTableSteps(keys, target, tableSize, hashMethod, collisionMethod)
-      setVisualizationData(steps)
+      setVisualizationData(steps, 'search-hash')
     } catch (error) {
       console.error('Error generating hash steps:', error)
     }
@@ -349,7 +349,7 @@ export default function HashSearchVisualization() {
         </span>
       </div>
 
-      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && (
+      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && state.visualizationContext === 'search-hash' && (
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
           <p className="text-blue-800">
             {state.visualizationData[state.currentStep].description}

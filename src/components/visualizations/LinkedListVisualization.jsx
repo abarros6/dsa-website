@@ -243,21 +243,21 @@ export default function LinkedListVisualization() {
   const handleInsert = (index, value) => {
     const op = { type: 'insert', index: parseInt(index), value: parseInt(value) }
     const steps = generateVisualizationData(nodes, head, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'linkedlist-insert')
     setOperation(op)
   }
 
   const handleDelete = (value) => {
     const op = { type: 'delete', value: parseInt(value) }
     const steps = generateVisualizationData(nodes, head, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'linkedlist-delete')
     setOperation(op)
   }
 
   const handleSearch = (value) => {
     const op = { type: 'search', value: parseInt(value) }
     const steps = generateVisualizationData(nodes, head, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'linkedlist-search')
     setOperation(op)
   }
 
@@ -514,7 +514,9 @@ export default function LinkedListVisualization() {
 
         {/* Current Operation Description */}
         <AnimatePresence>
-          {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && (
+          {state.visualizationData.length > 0 && 
+           state.visualizationData[state.currentStep] && 
+           state.visualizationContext?.startsWith('linkedlist-') && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

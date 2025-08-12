@@ -1,26 +1,15 @@
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useApp } from '../../contexts/AppContext'
+import { useCallback } from 'react'
+import SortingVisualizationBase from '../common/SortingVisualizationBase'
 
 const SORT_COLORS = {
   default: '#6b7280',
   dividing: '#3b82f6',
-  merging: '#f59e0b',
+  merging: '#f59e0b', 
   comparing: '#8b5cf6',
-  sorted: '#10b981',
-  leftSubarray: '#60a5fa',
-  rightSubarray: '#fbbf24'
+  sorted: '#10b981'
 }
 
 export default function MergeSortVisualizationClean() {
-  const { state, setVisualizationData } = useApp()
-  const [array, setArray] = useState([38, 27, 43, 3, 9, 82, 10])
-  const [operations, setOperations] = useState(0)
-  const [dividingIndices, setDividingIndices] = useState([])
-  const [mergingIndices, setMergingIndices] = useState([])
-  const [comparingIndices, setComparingIndices] = useState([])
-  const [sortedIndices, setSortedIndices] = useState([])
-
   const generateMergeSortSteps = useCallback((inputArray) => {
     if (!Array.isArray(inputArray) || inputArray.length === 0) {
       return []
@@ -186,7 +175,7 @@ export default function MergeSortVisualizationClean() {
     
     try {
       const steps = generateMergeSortSteps(array)
-      setVisualizationData(steps)
+      setVisualizationData(steps, 'sorting-merge')
     } catch (error) {
       console.error('Error generating steps:', error)
     }
@@ -260,7 +249,9 @@ export default function MergeSortVisualizationClean() {
         <span>Array Size: {array.length}</span>
       </div>
 
-      {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && (
+      {state.visualizationData.length > 0 && 
+       state.visualizationData[state.currentStep] && 
+       state.visualizationContext === 'sorting-merge' && (
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
           <p className="text-blue-800">
             {state.visualizationData[state.currentStep].description}

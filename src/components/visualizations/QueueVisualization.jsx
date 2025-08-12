@@ -161,28 +161,28 @@ export default function QueueVisualization() {
   const handleEnqueue = (value) => {
     const op = { type: 'enqueue', value: parseInt(value) }
     const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'queue-enqueue')
     setOperation(op)
   }
 
   const handleDequeue = () => {
     const op = { type: 'dequeue' }
     const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'queue-dequeue')
     setOperation(op)
   }
 
   const handleFront = () => {
     const op = { type: 'front' }
     const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'queue-front')
     setOperation(op)
   }
 
   const handleRear = () => {
     const op = { type: 'rear' }
     const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
-    setVisualizationData(steps)
+    setVisualizationData(steps, 'queue-rear')
     setOperation(op)
   }
 
@@ -394,7 +394,8 @@ export default function QueueVisualization() {
 
         {/* Current Operation Description */}
         <AnimatePresence>
-          {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && (
+          {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && 
+            state.visualizationContext?.startsWith('queue-') && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
