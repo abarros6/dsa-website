@@ -6,6 +6,12 @@ import ArrayVisualization from '../components/visualizations/ArrayVisualization'
 import StackVisualization from '../components/visualizations/StackVisualization'
 import QueueVisualization from '../components/visualizations/QueueVisualization'
 import LinkedListVisualization from '../components/visualizations/LinkedListVisualization'
+import BSTVisualization from '../components/visualizations/BSTVisualization'
+import TreeTraversalVisualization from '../components/visualizations/TreeTraversalVisualization'
+import AVLTreeVisualization from '../components/visualizations/AVLTreeVisualization'
+import GraphVisualization from '../components/visualizations/GraphVisualization'
+import DijkstraVisualization from '../components/visualizations/DijkstraVisualization'
+import MSTVisualization from '../components/visualizations/MSTVisualization'
 import TopicOverviewGrid from '../components/common/TopicOverviewGrid'
 import BreadcrumbNavigation from '../components/common/BreadcrumbNavigation'
 import UnderDevelopmentBanner from '../components/common/UnderDevelopmentBanner'
@@ -197,29 +203,265 @@ function LinearStructures() {
 }
 
 function Trees() {
+  const [currentVisualization, setCurrentVisualization] = useState('bst')
+  const { clearData } = useApp()
+
+  const handleVisualizationChange = (newVisualization) => {
+    if (newVisualization !== currentVisualization) {
+      clearData()
+      setCurrentVisualization(newVisualization)
+    }
+  }
+
+  const treeStructures = [
+    {
+      id: 'bst',
+      title: 'Binary Search Tree',
+      description: 'Ordered tree with left < root < right property',
+      icon: '🌲',
+      component: BSTVisualization
+    },
+    {
+      id: 'traversals',
+      title: 'Tree Traversals',
+      description: 'In-order, pre-order, and post-order traversals',
+      icon: '🔄',
+      component: TreeTraversalVisualization
+    },
+    {
+      id: 'avl',
+      title: 'AVL Tree',
+      description: 'Self-balancing binary search tree',
+      icon: '⚖️',
+      component: AVLTreeVisualization
+    }
+  ]
+
+  const CurrentComponent = treeStructures.find(s => s.id === currentVisualization)?.component
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Tree Data Structures</h1>
-      <div className="card">
-        <p className="text-gray-600 mb-4">
-          Explore binary search trees, AVL trees, and heap operations.
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Tree Data Structures</h1>
+        <p className="text-lg text-gray-600">
+          Interactive visualizations for binary search trees, traversals, and self-balancing trees.
         </p>
-        <UnderDevelopmentBanner feature="Tree visualizations" />
       </div>
+
+      {/* Structure Selection */}
+      <div className="mb-8">
+        <AlgorithmSelector
+          items={treeStructures}
+          currentItem={currentVisualization}
+          onItemChange={handleVisualizationChange}
+        />
+      </div>
+
+      {/* Visualization Area */}
+      <div className="card">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">
+            {treeStructures.find(s => s.id === currentVisualization)?.title}
+          </h2>
+        </div>
+        
+        <div className="min-h-[500px]">
+          {CurrentComponent && <CurrentComponent />}
+        </div>
+        
+        {/* Simple Control Panel for Step-by-step playback */}
+        <div className="mt-6">
+          <SimpleControlPanel />
+        </div>
+      </div>
+
+      {/* Educational Content */}
+      <EducationalContent
+        leftContent={{
+          title: "Time Complexity Summary",
+          content: (
+            <>
+              <div className="flex justify-between">
+                <span className="font-medium">BST Search (avg):</span>
+                <span className="text-green-600">O(log n)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">BST Search (worst):</span>
+                <span className="text-red-600">O(n)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">BST Insert (avg):</span>
+                <span className="text-green-600">O(log n)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">AVL Search:</span>
+                <span className="text-green-600">O(log n)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">AVL Insert:</span>
+                <span className="text-green-600">O(log n)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Tree Traversal:</span>
+                <span className="text-yellow-600">O(n)</span>
+              </div>
+            </>
+          )
+        }}
+        rightContent={{
+          title: "Common Applications",
+          content: (
+            <>
+              <div>
+                <span className="font-medium text-blue-600">Binary Search Trees:</span>
+                <span className="text-gray-600 ml-2">Databases, file systems, expression parsing</span>
+              </div>
+              <div>
+                <span className="font-medium text-purple-600">Tree Traversals:</span>
+                <span className="text-gray-600 ml-2">Directory listings, serialization, calculations</span>
+              </div>
+              <div>
+                <span className="font-medium text-green-600">AVL Trees:</span>
+                <span className="text-gray-600 ml-2">Database indexing, priority queues, balanced search</span>
+              </div>
+              <div>
+                <span className="font-medium text-indigo-600">In-Order Traversal:</span>
+                <span className="text-gray-600 ml-2">Sorted output from BST</span>
+              </div>
+            </>
+          )
+        }}
+      />
     </div>
   )
 }
 
 function Graphs() {
+  const [currentVisualization, setCurrentVisualization] = useState('traversal')
+  const { clearData } = useApp()
+
+  const handleVisualizationChange = (newVisualization) => {
+    if (newVisualization !== currentVisualization) {
+      clearData()
+      setCurrentVisualization(newVisualization)
+    }
+  }
+
+  const graphAlgorithms = [
+    {
+      id: 'traversal',
+      title: 'Graph Traversal',
+      description: 'BFS and DFS traversal algorithms',
+      icon: '🔍',
+      component: GraphVisualization
+    },
+    {
+      id: 'dijkstra',
+      title: "Dijkstra's Algorithm",
+      description: 'Shortest path algorithm for weighted graphs',
+      icon: '📏',
+      component: DijkstraVisualization
+    },
+    {
+      id: 'mst',
+      title: 'Minimum Spanning Tree',
+      description: "Kruskal's and Prim's MST algorithms",
+      icon: '🌳',
+      component: MSTVisualization
+    }
+  ]
+
+  const CurrentComponent = graphAlgorithms.find(s => s.id === currentVisualization)?.component
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Graph Data Structures</h1>
-      <div className="card">
-        <p className="text-gray-600 mb-4">
-          Understand graph representations, traversals, and algorithms.
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Graph Algorithms</h1>
+        <p className="text-lg text-gray-600">
+          Interactive visualizations for graph traversal, shortest paths, and minimum spanning trees.
         </p>
-        <UnderDevelopmentBanner feature="Graph visualizations" />
       </div>
+
+      {/* Algorithm Selection */}
+      <div className="mb-8">
+        <AlgorithmSelector
+          items={graphAlgorithms}
+          currentItem={currentVisualization}
+          onItemChange={handleVisualizationChange}
+        />
+      </div>
+
+      {/* Visualization Area */}
+      <div className="card">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">
+            {graphAlgorithms.find(s => s.id === currentVisualization)?.title}
+          </h2>
+        </div>
+        
+        <div className="min-h-[500px]">
+          {CurrentComponent && <CurrentComponent />}
+        </div>
+        
+        {/* Simple Control Panel for Step-by-step playback */}
+        <div className="mt-6">
+          <SimpleControlPanel />
+        </div>
+      </div>
+
+      {/* Educational Content */}
+      <EducationalContent
+        leftContent={{
+          title: "Time Complexity Summary",
+          content: (
+            <>
+              <div className="flex justify-between">
+                <span className="font-medium">BFS/DFS:</span>
+                <span className="text-yellow-600">O(V + E)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Dijkstra's:</span>
+                <span className="text-orange-600">O((V + E) log V)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Kruskal's MST:</span>
+                <span className="text-orange-600">O(E log E)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Prim's MST:</span>
+                <span className="text-orange-600">O((V + E) log V)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Space Complexity:</span>
+                <span className="text-yellow-600">O(V)</span>
+              </div>
+            </>
+          )
+        }}
+        rightContent={{
+          title: "Common Applications",
+          content: (
+            <>
+              <div>
+                <span className="font-medium text-blue-600">BFS/DFS:</span>
+                <span className="text-gray-600 ml-2">Web crawling, social networks, maze solving</span>
+              </div>
+              <div>
+                <span className="font-medium text-purple-600">Dijkstra's:</span>
+                <span className="text-gray-600 ml-2">GPS navigation, network routing, flight connections</span>
+              </div>
+              <div>
+                <span className="font-medium text-green-600">MST:</span>
+                <span className="text-gray-600 ml-2">Network design, clustering, circuit design</span>
+              </div>
+              <div>
+                <span className="font-medium text-indigo-600">Graph Theory:</span>
+                <span className="text-gray-600 ml-2">Social media analysis, dependency resolution</span>
+              </div>
+            </>
+          )
+        }}
+      />
     </div>
   )
 }
