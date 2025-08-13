@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useApp } from '../../contexts/AppContext'
+import Quiz from '../Quiz'
 
 const JAVA_COLORS = {
   generic: '#3b82f6',
@@ -69,6 +70,108 @@ factorial(n) {
     { n: 4, step: 6, depth: 0, status: 'returning', result: 24 }
   ]
 }
+
+// Java Features Quiz Questions
+const JAVA_FEATURES_QUIZ_QUESTIONS = [
+  {
+    type: 'multiple-choice',
+    question: 'What is the primary benefit of using generics in Java?',
+    options: [
+      'Improved runtime performance',
+      'Compile-time type safety and elimination of casting',
+      'Reduced memory usage',
+      'Faster compilation'
+    ],
+    correctAnswer: 1,
+    explanation: 'Generics provide compile-time type safety, eliminate the need for explicit casting, and help catch type-related errors at compile time rather than runtime.'
+  },
+  {
+    type: 'code-output',
+    question: 'What will happen when this code is compiled?',
+    code: `List<String> list = new ArrayList<>();
+list.add("Hello");
+list.add(123); // What happens here?`,
+    options: [
+      'Compiles successfully, 123 is converted to "123"',
+      'Compilation error - cannot add int to List<String>',
+      'Runtime exception when adding 123',
+      'Compiles but throws ClassCastException later'
+    ],
+    correctAnswer: 1,
+    explanation: 'Generics provide compile-time type checking. Adding an int to a List<String> will result in a compilation error, preventing type-related runtime errors.'
+  },
+  {
+    type: 'multiple-choice',
+    question: 'In a try-catch-finally block, when does the finally block execute?',
+    options: [
+      'Only when no exception occurs',
+      'Only when an exception is caught',
+      'Always, regardless of whether an exception occurs',
+      'Only when the try block completes normally'
+    ],
+    correctAnswer: 2,
+    explanation: 'The finally block always executes, whether an exception occurs or not. It\'s used for cleanup code that must run regardless of the execution path.'
+  },
+  {
+    type: 'multiple-select',
+    question: 'Which of the following are valid generic wildcard expressions? (Select all that apply)',
+    options: [
+      'List<? extends Number>',
+      'List<? super Integer>',
+      'List<?>',
+      'List<? implements Comparable>'
+    ],
+    correctAnswers: [0, 1, 2],
+    explanation: 'Valid wildcard expressions use "extends" for upper bounds, "super" for lower bounds, and "?" for unbounded wildcards. "implements" is not valid syntax for generics.'
+  },
+  {
+    type: 'code-output',
+    question: 'What is the output of factorial(4) using the recursive implementation shown?',
+    code: `public static int factorial(int n) {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+}`,
+    options: [
+      '10',
+      '16',
+      '24',
+      'Stack overflow error'
+    ],
+    correctAnswer: 2,
+    explanation: 'factorial(4) = 4 * factorial(3) = 4 * 3 * factorial(2) = 4 * 3 * 2 * factorial(1) = 4 * 3 * 2 * 1 = 24'
+  },
+  {
+    type: 'multiple-choice',
+    question: 'What is type erasure in Java generics?',
+    options: [
+      'Removing generic types at runtime for backward compatibility',
+      'A compiler optimization technique',
+      'An error that occurs when using raw types',
+      'A way to improve performance'
+    ],
+    correctAnswer: 0,
+    explanation: 'Type erasure removes generic type information at runtime to maintain backward compatibility with pre-Java 5 code. This is why you cannot access generic type information at runtime.'
+  },
+  {
+    type: 'true-false',
+    question: 'A recursive method must always have a base case to prevent infinite recursion.',
+    options: ['True', 'False'],
+    correctAnswer: 0,
+    explanation: 'True. Every recursive method must have a base case (terminating condition) to prevent infinite recursion and stack overflow errors.'
+  },
+  {
+    type: 'multiple-choice',
+    question: 'Which statement about checked vs unchecked exceptions is correct?',
+    options: [
+      'Checked exceptions must be handled at compile time',
+      'Unchecked exceptions must be declared in method signatures',
+      'RuntimeException is a checked exception',
+      'IOException is an unchecked exception'
+    ],
+    correctAnswer: 0,
+    explanation: 'Checked exceptions (like IOException) must be either caught or declared in the method signature at compile time. Unchecked exceptions (like RuntimeException) do not have this requirement.'
+  }
+]
 
 export default function JavaFeaturesVisualization() {
   const { state, setVisualizationData } = useApp()
@@ -574,24 +677,34 @@ printNumbers(integers); // Works with any Number subtype`}</code>
 
   return (
     <div className="w-full">
-      {/* Demo Selection */}
+      {/* Demo Selection with Quiz Tab */}
       <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <div className="flex justify-center space-x-2">
+        <div className="flex justify-center space-x-2 flex-wrap">
           {[
-            { id: 'generics', label: 'Generics', icon: '📦' },
-            { id: 'exceptions', label: 'Exception Handling', icon: '⚠️' },
-            { id: 'recursion', label: 'Recursion', icon: '🔄' }
+            { id: 'generics', label: 'Generics', icon: '📦', type: 'demo' },
+            { id: 'exceptions', label: 'Exception Handling', icon: '⚠️', type: 'demo' },
+            { id: 'recursion', label: 'Recursion', icon: '🔄', type: 'demo' },
+            { id: 'quiz', label: 'Knowledge Quiz', icon: '🧠', type: 'quiz' }
           ].map(demo => (
             <button
               key={demo.id}
-              onClick={() => handleDemoChange(demo.id)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              onClick={() => demo.type === 'quiz' ? setCurrentDemo('quiz') : handleDemoChange(demo.id)}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                 currentDemo === demo.id
-                  ? 'bg-blue-500 text-white'
+                  ? demo.type === 'quiz'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg scale-105'
+                    : 'bg-blue-500 text-white'
+                  : demo.type === 'quiz'
+                  ? 'bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 hover:from-emerald-200 hover:to-teal-200 border-2 border-emerald-300 animate-pulse'
                   : 'bg-white text-gray-700 hover:bg-gray-100'
-              }`}
+              } ${demo.type === 'quiz' ? 'relative overflow-hidden' : ''}`}
             >
-              {demo.icon} {demo.label}
+              {demo.type === 'quiz' && currentDemo !== 'quiz' && (
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-20 animate-ping"></div>
+              )}
+              <span className="relative z-10">
+                {demo.icon} {demo.label}
+              </span>
             </button>
           ))}
         </div>
@@ -602,6 +715,28 @@ printNumbers(integers); // Works with any Number subtype`}</code>
         {currentDemo === 'generics' && renderGenerics()}
         {currentDemo === 'exceptions' && renderExceptions()}
         {currentDemo === 'recursion' && renderRecursion()}
+        {currentDemo === 'quiz' && (
+          <div className="card">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                🧠 Java Features Knowledge Quiz
+              </h2>
+              <p className="text-gray-600">
+                Challenge yourself with questions about generics, exception handling, and recursion to master these advanced Java concepts.
+              </p>
+            </div>
+            
+            <Quiz
+              title="Advanced Java Features Mastery"
+              questions={JAVA_FEATURES_QUIZ_QUESTIONS}
+              onComplete={(results) => {
+                console.log('Java Features Quiz completed:', results)
+              }}
+              showResults={true}
+              allowRetake={true}
+            />
+          </div>
+        )}
       </div>
 
       {/* Comprehensive Java Features Education - Static Content Below */}

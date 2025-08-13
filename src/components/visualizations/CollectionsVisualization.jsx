@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useApp } from '../../contexts/AppContext'
+import Quiz from '../Quiz'
 
 const COLLECTIONS_COLORS = {
   arraylist: '#3b82f6',
@@ -37,6 +38,106 @@ const HASHMAP_OPERATIONS = [
   { operation: 'put', key: 'orange', value: 8, hash: 1, description: 'put("orange", 8) - collision!' },
   { operation: 'get', key: 'apple', description: 'get("apple")' },
   { operation: 'remove', key: 'banana', description: 'remove("banana")' }
+]
+
+// Collections Framework Quiz Questions
+const COLLECTIONS_QUIZ_QUESTIONS = [
+  {
+    type: 'multiple-choice',
+    question: 'What is the time complexity for accessing an element by index in an ArrayList?',
+    options: [
+      'O(1) - Constant time',
+      'O(log n) - Logarithmic time',
+      'O(n) - Linear time', 
+      'O(n²) - Quadratic time'
+    ],
+    correctAnswer: 0,
+    explanation: 'ArrayList is backed by an array, so accessing an element by index is O(1) constant time since arrays provide direct access to elements via indexing.'
+  },
+  {
+    type: 'multiple-choice',
+    question: 'Which collection is best for frequent insertions and deletions in the middle of the list?',
+    options: [
+      'ArrayList',
+      'LinkedList',
+      'Vector',
+      'Stack'
+    ],
+    correctAnswer: 1,
+    explanation: 'LinkedList is optimal for frequent insertions/deletions in the middle because it only requires updating node references (O(1) if you have the reference), while ArrayList requires shifting elements (O(n)).'
+  },
+  {
+    type: 'code-output',
+    question: 'What will be the output of this code?',
+    code: `HashMap<String, Integer> map = new HashMap<>();
+map.put("apple", 5);
+map.put("banana", 3);
+map.put("apple", 8);
+System.out.println(map.get("apple"));`,
+    options: [
+      '5',
+      '8',
+      '13',
+      'null'
+    ],
+    correctAnswer: 1,
+    explanation: 'HashMap stores key-value pairs where keys are unique. When "apple" is added again with value 8, it overwrites the previous value 5, so the output is 8.'
+  },
+  {
+    type: 'multiple-select',
+    question: 'Which statements about HashMap are true? (Select all that apply)',
+    options: [
+      'Allows null keys and values',
+      'Maintains insertion order',
+      'Uses hash codes for fast lookups',
+      'Thread-safe by default'
+    ],
+    correctAnswers: [0, 2],
+    explanation: 'HashMap allows null keys and values, and uses hash codes for O(1) average lookups. It does NOT maintain insertion order (LinkedHashMap does) and is NOT thread-safe (Hashtable/ConcurrentHashMap are).'
+  },
+  {
+    type: 'multiple-choice',
+    question: 'What happens when ArrayList reaches its capacity and needs to grow?',
+    options: [
+      'Throws an OutOfMemoryError',
+      'Creates a new array 1.5x the size and copies elements',
+      'Converts to a LinkedList automatically',
+      'Removes the oldest elements to make space'
+    ],
+    correctAnswer: 1,
+    explanation: 'ArrayList grows by creating a new array approximately 1.5 times the current size and copying all existing elements to the new array. This amortizes the cost of resizing.'
+  },
+  {
+    type: 'true-false',
+    question: 'LinkedList in Java implements both List and Deque interfaces.',
+    options: ['True', 'False'],
+    correctAnswer: 0,
+    explanation: 'True. LinkedList implements both List and Deque interfaces, allowing it to function as a list, stack, or queue with efficient operations at both ends.'
+  },
+  {
+    type: 'multiple-choice',
+    question: 'Which factor most affects HashMap performance?',
+    options: [
+      'The number of elements stored',
+      'The load factor and hash function quality',
+      'The size of keys and values',
+      'The order of insertion'
+    ],
+    correctAnswer: 1,
+    explanation: 'HashMap performance depends on load factor (ratio of elements to buckets) and hash function quality. Poor hash distribution causes clustering, degrading performance from O(1) to O(n).'
+  },
+  {
+    type: 'multiple-choice',
+    question: 'What is the primary trade-off when choosing LinkedList over ArrayList?',
+    options: [
+      'Memory usage vs. thread safety',
+      'Memory usage vs. insertion/deletion speed',
+      'Random access speed vs. insertion/deletion speed',
+      'Type safety vs. performance'
+    ],
+    correctAnswer: 2,
+    explanation: 'The main trade-off is random access speed (ArrayList O(1) vs LinkedList O(n)) versus insertion/deletion speed (ArrayList O(n) vs LinkedList O(1) with reference).'
+  }
 ]
 
 export default function CollectionsVisualization() {
@@ -596,24 +697,34 @@ public class ArrayList<E> implements List<E> {
 
   return (
     <div className="w-full">
-      {/* Demo Selection */}
+      {/* Demo Selection with Quiz Tab */}
       <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <div className="flex justify-center space-x-2">
+        <div className="flex justify-center space-x-2 flex-wrap">
           {[
-            { id: 'arraylist', label: 'ArrayList', icon: '📊' },
-            { id: 'linkedlist', label: 'LinkedList', icon: '🔗' },
-            { id: 'hashmap', label: 'HashMap', icon: '🗂️' }
+            { id: 'arraylist', label: 'ArrayList', icon: '📊', type: 'demo' },
+            { id: 'linkedlist', label: 'LinkedList', icon: '🔗', type: 'demo' },
+            { id: 'hashmap', label: 'HashMap', icon: '🗂️', type: 'demo' },
+            { id: 'quiz', label: 'Knowledge Quiz', icon: '🧠', type: 'quiz' }
           ].map(demo => (
             <button
               key={demo.id}
-              onClick={() => handleDemoChange(demo.id)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              onClick={() => demo.type === 'quiz' ? setCurrentDemo('quiz') : handleDemoChange(demo.id)}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                 currentDemo === demo.id
-                  ? 'bg-blue-500 text-white'
+                  ? demo.type === 'quiz'
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg scale-105'
+                    : 'bg-blue-500 text-white'
+                  : demo.type === 'quiz'
+                  ? 'bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 hover:from-orange-200 hover:to-red-200 border-2 border-orange-300 animate-pulse'
                   : 'bg-white text-gray-700 hover:bg-gray-100'
-              }`}
+              } ${demo.type === 'quiz' ? 'relative overflow-hidden' : ''}`}
             >
-              {demo.icon} {demo.label}
+              {demo.type === 'quiz' && currentDemo !== 'quiz' && (
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-400 opacity-20 animate-ping"></div>
+              )}
+              <span className="relative z-10">
+                {demo.icon} {demo.label}
+              </span>
             </button>
           ))}
         </div>
@@ -624,6 +735,28 @@ public class ArrayList<E> implements List<E> {
         {currentDemo === 'arraylist' && renderArrayList()}
         {currentDemo === 'linkedlist' && renderLinkedList()}
         {currentDemo === 'hashmap' && renderHashMap()}
+        {currentDemo === 'quiz' && (
+          <div className="card">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                🧠 Collections Framework Knowledge Quiz
+              </h2>
+              <p className="text-gray-600">
+                Test your understanding of ArrayList, LinkedList, HashMap, and their performance characteristics with this comprehensive assessment.
+              </p>
+            </div>
+            
+            <Quiz
+              title="Java Collections Framework Mastery"
+              questions={COLLECTIONS_QUIZ_QUESTIONS}
+              onComplete={(results) => {
+                console.log('Collections Quiz completed:', results)
+              }}
+              showResults={true}
+              allowRetake={true}
+            />
+          </div>
+        )}
       </div>
 
       {/* Comprehensive Collections Education - Static Content Below */}

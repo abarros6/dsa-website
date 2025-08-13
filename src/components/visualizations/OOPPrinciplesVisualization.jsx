@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useApp } from '../../contexts/AppContext'
+import Quiz from '../Quiz'
 
 const OOP_COLORS = {
   class: '#3b82f6',
@@ -207,6 +208,91 @@ public class Truck extends Vehicle {
   }
   return examples[className] || '// Code example not available'
 }
+
+// OOP Quiz Questions
+const OOP_QUIZ_QUESTIONS = [
+  {
+    type: 'multiple-choice',
+    question: 'Which OOP principle focuses on hiding internal implementation details and providing controlled access through methods?',
+    options: [
+      'Inheritance',
+      'Encapsulation', 
+      'Polymorphism',
+      'Abstraction'
+    ],
+    correctAnswer: 1,
+    explanation: 'Encapsulation bundles data and methods together while hiding internal implementation details using access modifiers like private, protected, and public.'
+  },
+  {
+    type: 'multiple-choice',
+    question: 'In the Vehicle hierarchy shown, what type of relationship exists between Car and Vehicle?',
+    options: [
+      'Has-a relationship (Composition)',
+      'Is-a relationship (Inheritance)',
+      'Uses-a relationship (Aggregation)',
+      'No relationship'
+    ],
+    correctAnswer: 1,
+    explanation: 'Car extends Vehicle, creating an "is-a" relationship through inheritance. A Car IS-A Vehicle and inherits all Vehicle properties and methods.'
+  },
+  {
+    type: 'code-output',
+    question: 'What will be the output of this polymorphic method call?',
+    code: `Animal animal = new Dog("Buddy");
+System.out.println(animal.makeSound());`,
+    options: [
+      'Animal sound',
+      'Woof! Woof!',
+      'Compilation error',
+      'Runtime error'
+    ],
+    correctAnswer: 1,
+    explanation: 'Polymorphism allows the Dog\'s overridden makeSound() method to be called at runtime, even though the reference is of type Animal. This is dynamic method dispatch.'
+  },
+  {
+    type: 'multiple-select',
+    question: 'Which access modifiers allow a subclass to access a member from its parent class? (Select all that apply)',
+    options: [
+      'private',
+      'protected',
+      'public',
+      'package-private (default)'
+    ],
+    correctAnswers: [1, 2, 3],
+    explanation: 'Subclasses can access protected, public, and package-private (if in same package) members from their parent class. Private members are not accessible to subclasses.'
+  },
+  {
+    type: 'true-false',
+    question: 'An abstract class in Java can be instantiated directly using the new keyword.',
+    options: ['True', 'False'],
+    correctAnswer: 1,
+    explanation: 'False. Abstract classes cannot be instantiated directly. They serve as templates for concrete subclasses and must be extended by other classes.'
+  },
+  {
+    type: 'multiple-choice',
+    question: 'Which principle is demonstrated when different classes (Dog, Cat, Bird) provide their own implementation of the makeSound() method?',
+    options: [
+      'Encapsulation',
+      'Inheritance',
+      'Polymorphism',
+      'Abstraction'
+    ],
+    correctAnswer: 2,
+    explanation: 'Polymorphism allows different classes to provide their own specific implementations of the same method signature, enabling the same interface to have different behaviors.'
+  },
+  {
+    type: 'multiple-choice',
+    question: 'What is the main benefit of using private fields with public getter/setter methods?',
+    options: [
+      'Improved performance',
+      'Reduced memory usage',
+      'Data validation and controlled access',
+      'Faster compilation'
+    ],
+    correctAnswer: 2,
+    explanation: 'Private fields with public accessors allow data validation, controlled access, and the ability to change internal implementation without affecting client code - core principles of encapsulation.'
+  }
+]
 
 export default function OOPPrinciplesVisualization() {
   const { state, setVisualizationData } = useApp()
@@ -870,24 +956,34 @@ public class PolymorphismDemo {
 
   return (
     <div className="w-full">
-      {/* Demo Selection */}
+      {/* Demo Selection with Quiz Tab */}
       <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <div className="flex justify-center space-x-2">
+        <div className="flex justify-center space-x-2 flex-wrap">
           {[
-            { id: 'hierarchy', label: 'Class Hierarchy', icon: '🏗️' },
-            { id: 'encapsulation', label: 'Encapsulation', icon: '🔒' },
-            { id: 'polymorphism', label: 'Polymorphism', icon: '🔄' }
+            { id: 'hierarchy', label: 'Class Hierarchy', icon: '🏗️', type: 'demo' },
+            { id: 'encapsulation', label: 'Encapsulation', icon: '🔒', type: 'demo' },
+            { id: 'polymorphism', label: 'Polymorphism', icon: '🔄', type: 'demo' },
+            { id: 'quiz', label: 'Knowledge Quiz', icon: '🧠', type: 'quiz' }
           ].map(demo => (
             <button
               key={demo.id}
-              onClick={() => handleDemoChange(demo.id)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              onClick={() => demo.type === 'quiz' ? setCurrentDemo('quiz') : handleDemoChange(demo.id)}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                 currentDemo === demo.id
-                  ? 'bg-blue-500 text-white'
+                  ? demo.type === 'quiz'
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg scale-105'
+                    : 'bg-blue-500 text-white'
+                  : demo.type === 'quiz'
+                  ? 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 hover:from-purple-200 hover:to-pink-200 border-2 border-purple-300 animate-pulse'
                   : 'bg-white text-gray-700 hover:bg-gray-100'
-              }`}
+              } ${demo.type === 'quiz' ? 'relative overflow-hidden' : ''}`}
             >
-              {demo.icon} {demo.label}
+              {demo.type === 'quiz' && currentDemo !== 'quiz' && (
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-20 animate-ping"></div>
+              )}
+              <span className="relative z-10">
+                {demo.icon} {demo.label}
+              </span>
             </button>
           ))}
         </div>
@@ -899,6 +995,28 @@ public class PolymorphismDemo {
         {currentDemo === 'hierarchy' && renderClassHierarchy()}
         {currentDemo === 'encapsulation' && renderEncapsulation()}
         {currentDemo === 'polymorphism' && renderPolymorphism()}
+        {currentDemo === 'quiz' && (
+          <div className="card">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                🧠 OOP Principles Knowledge Quiz
+              </h2>
+              <p className="text-gray-600">
+                Test your understanding of inheritance, encapsulation, polymorphism, and abstraction with this comprehensive quiz.
+              </p>
+            </div>
+            
+            <Quiz
+              title="Object-Oriented Programming Mastery"
+              questions={OOP_QUIZ_QUESTIONS}
+              onComplete={(results) => {
+                console.log('Quiz completed:', results)
+              }}
+              showResults={true}
+              allowRetake={true}
+            />
+          </div>
+        )}
       </div>
 
       {/* Comprehensive OOP Education Section - Static Content Below */}
