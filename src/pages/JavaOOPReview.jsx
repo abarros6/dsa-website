@@ -1,4 +1,10 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
+import { useApp } from '../contexts/AppContext'
+import { useEffect } from 'react'
+import SimpleControlPanel from '../components/SimpleControlPanel'
+import OOPPrinciplesVisualization from '../components/visualizations/OOPPrinciplesVisualization'
+import JavaFeaturesVisualization from '../components/visualizations/JavaFeaturesVisualization'
+import CollectionsVisualization from '../components/visualizations/CollectionsVisualization'
 
 const topics = [
   {
@@ -53,17 +59,36 @@ function TopicOverview() {
 }
 
 function OOPPrinciples() {
+  const { clearData } = useApp()
+
+  useEffect(() => {
+    clearData()
+  }, [clearData])
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">OOP Principles</h1>
-      <div className="card">
-        <p className="text-gray-600 mb-4">
-          Interactive visualizations for object-oriented programming principles will be implemented here.
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">OOP Principles</h1>
+        <p className="text-lg text-gray-600">
+          Explore the fundamental principles of object-oriented programming through interactive visualizations.
         </p>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-800">
-            🚧 This section is under development. Interactive OOP visualizations coming soon!
-          </p>
+      </div>
+
+      {/* Visualization Area */}
+      <div className="card">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Interactive OOP Demonstrations
+          </h2>
+        </div>
+        
+        <div className="min-h-[600px]">
+          <OOPPrinciplesVisualization />
+        </div>
+        
+        {/* Simple Control Panel for Step-by-step playback */}
+        <div className="mt-6">
+          <SimpleControlPanel />
         </div>
       </div>
     </div>
@@ -71,17 +96,36 @@ function OOPPrinciples() {
 }
 
 function JavaFeatures() {
+  const { clearData } = useApp()
+
+  useEffect(() => {
+    clearData()
+  }, [clearData])
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Java Features</h1>
-      <div className="card">
-        <p className="text-gray-600 mb-4">
-          Explore advanced Java features including generics, exception handling, and recursion.
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Java Features</h1>
+        <p className="text-lg text-gray-600">
+          Explore advanced Java features including generics, exception handling, and recursion through interactive visualizations.
         </p>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-800">
-            🚧 This section is under development. Java features visualizations coming soon!
-          </p>
+      </div>
+
+      {/* Visualization Area */}
+      <div className="card">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Interactive Java Feature Demonstrations
+          </h2>
+        </div>
+        
+        <div className="min-h-[600px]">
+          <JavaFeaturesVisualization />
+        </div>
+        
+        {/* Simple Control Panel for Step-by-step playback */}
+        <div className="mt-6">
+          <SimpleControlPanel />
         </div>
       </div>
     </div>
@@ -89,17 +133,36 @@ function JavaFeatures() {
 }
 
 function Collections() {
+  const { clearData } = useApp()
+
+  useEffect(() => {
+    clearData()
+  }, [clearData])
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Collections Framework</h1>
-      <div className="card">
-        <p className="text-gray-600 mb-4">
-          Interactive exploration of Java's Collections Framework and its implementations.
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Collections Framework</h1>
+        <p className="text-lg text-gray-600">
+          Interactive exploration of Java's Collections Framework and its key implementations.
         </p>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-800">
-            🚧 This section is under development. Collections visualizations coming soon!
-          </p>
+      </div>
+
+      {/* Visualization Area */}
+      <div className="card">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Interactive Collections Demonstrations
+          </h2>
+        </div>
+        
+        <div className="min-h-[600px]">
+          <CollectionsVisualization />
+        </div>
+        
+        {/* Simple Control Panel for Step-by-step playback */}
+        <div className="mt-6">
+          <SimpleControlPanel />
         </div>
       </div>
     </div>
