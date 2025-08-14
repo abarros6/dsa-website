@@ -1,7 +1,4 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
-import { useApp } from '../contexts/AppContext'
-import { useEffect } from 'react'
-import SimpleControlPanel from '../components/SimpleControlPanel'
 import OOPPrinciplesVisualization from '../components/visualizations/OOPPrinciplesVisualization'
 import JavaFeaturesVisualization from '../components/visualizations/JavaFeaturesVisualization'
 import CollectionsVisualization from '../components/visualizations/CollectionsVisualization'
@@ -59,11 +56,6 @@ function TopicOverview() {
 }
 
 function OOPPrinciples() {
-  const { clearData } = useApp()
-
-  useEffect(() => {
-    clearData()
-  }, [clearData])
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -74,7 +66,7 @@ function OOPPrinciples() {
         </p>
       </div>
 
-      {/* Visualization Area */}
+      {/* Visualization */}
       <div className="card">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -85,22 +77,12 @@ function OOPPrinciples() {
         <div className="min-h-[600px]">
           <OOPPrinciplesVisualization />
         </div>
-        
-        {/* Simple Control Panel for Step-by-step playback */}
-        <div className="mt-6">
-          <SimpleControlPanel />
-        </div>
       </div>
     </div>
   )
 }
 
 function JavaFeatures() {
-  const { clearData } = useApp()
-
-  useEffect(() => {
-    clearData()
-  }, [clearData])
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -111,7 +93,7 @@ function JavaFeatures() {
         </p>
       </div>
 
-      {/* Visualization Area */}
+      {/* Visualization */}
       <div className="card">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -122,22 +104,12 @@ function JavaFeatures() {
         <div className="min-h-[600px]">
           <JavaFeaturesVisualization />
         </div>
-        
-        {/* Simple Control Panel for Step-by-step playback */}
-        <div className="mt-6">
-          <SimpleControlPanel />
-        </div>
       </div>
     </div>
   )
 }
 
 function Collections() {
-  const { clearData } = useApp()
-
-  useEffect(() => {
-    clearData()
-  }, [clearData])
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -148,7 +120,7 @@ function Collections() {
         </p>
       </div>
 
-      {/* Visualization Area */}
+      {/* Visualization */}
       <div className="card">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -158,11 +130,6 @@ function Collections() {
         
         <div className="min-h-[600px]">
           <CollectionsVisualization />
-        </div>
-        
-        {/* Simple Control Panel for Step-by-step playback */}
-        <div className="mt-6">
-          <SimpleControlPanel />
         </div>
       </div>
     </div>

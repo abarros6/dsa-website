@@ -1,20 +1,27 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-function CollapsibleCard({ title, children, defaultOpen = false }) {
+export default function CollapsibleSection({ 
+  title, 
+  children, 
+  defaultOpen = false, 
+  bgColor = "bg-blue-50", 
+  borderColor = "border-blue-200", 
+  titleColor = "text-blue-800" 
+}) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   return (
-    <div className="card">
+    <div className={`p-4 ${bgColor} border ${borderColor} rounded-lg`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full text-left hover:bg-gray-50 -m-6 p-6 rounded-lg transition-colors"
+        className="flex items-center justify-between w-full text-left hover:opacity-75 transition-opacity"
       >
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+        <h3 className={`font-semibold ${titleColor}`}>{title}</h3>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
-          className="text-gray-500"
+          className={titleColor}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -30,26 +37,12 @@ function CollapsibleCard({ title, children, defaultOpen = false }) {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="mt-3 space-y-2 text-sm">
+            <div className="mt-3">
               {children}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
-  )
-}
-
-export default function EducationalContent({ leftContent, rightContent }) {
-  return (
-    <div className="mt-8 grid md:grid-cols-2 gap-6">
-      <CollapsibleCard title={leftContent.title}>
-        {leftContent.content}
-      </CollapsibleCard>
-
-      <CollapsibleCard title={rightContent.title}>
-        {rightContent.content}
-      </CollapsibleCard>
     </div>
   )
 }

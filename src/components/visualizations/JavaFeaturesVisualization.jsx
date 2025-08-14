@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useApp } from '../../contexts/AppContext'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
 import Quiz from '../Quiz'
+import CollapsibleSection from '../common/CollapsibleSection'
 
 const JAVA_COLORS = {
   generic: '#3b82f6',
@@ -174,109 +174,22 @@ list.add(123); // What happens here?`,
 ]
 
 export default function JavaFeaturesVisualization() {
-  const { state, setVisualizationData } = useApp()
   const [currentDemo, setCurrentDemo] = useState('generics')
-  const [exceptionStep, setExceptionStep] = useState(0)
-  const [recursionStep, setRecursionStep] = useState(0)
   const [genericsData, setGenericsData] = useState({ type: 'ArrayList<String>', items: [] })
+  const [callStack] = useState([
+    { n: 4, result: null, status: 'active' },
+    { n: 3, result: null, status: 'waiting' },
+    { n: 2, result: null, status: 'waiting' },
+    { n: 1, result: 1, status: 'complete' }
+  ])
 
-  const generateVisualizationSteps = useCallback((demo) => {
-    const steps = []
-    
-    switch (demo) {
-      case 'generics':
-        steps.push({
-          demo: 'generics',
-          step: 0,
-          description: 'Generics - Type Safety in Java Collections',
-          operation: 'java-demo',
-          currentType: 'ArrayList<String>'
-        })
-        
-        GENERICS_EXAMPLE['ArrayList<String>'].operations.forEach((op, index) => {
-          steps.push({
-            demo: 'generics',
-            step: index + 1,
-            description: `Attempting to ${op.action}(${op.value}) to ArrayList<String>`,
-            operation: 'java-demo',
-            currentOperation: op,
-            valid: op.valid
-          })
-        })
-        break
-        
-      case 'exceptions':
-        steps.push({
-          demo: 'exceptions',
-          step: 0,
-          description: 'Exception Handling - Try-Catch-Finally Flow',
-          operation: 'java-demo'
-        })
-        
-        EXCEPTION_EXAMPLE.steps.forEach((step, index) => {
-          steps.push({
-            demo: 'exceptions',
-            step: index + 1,
-            description: step.description,
-            operation: 'java-demo',
-            currentLine: step.line,
-            currentBlock: step.block,
-            status: step.status
-          })
-        })
-        break
-        
-      case 'recursion':
-        steps.push({
-          demo: 'recursion',
-          step: 0,
-          description: 'Recursion - factorial(4) call stack visualization',
-          operation: 'java-demo'
-        })
-        
-        RECURSION_EXAMPLE.calls.forEach((call, index) => {
-          steps.push({
-            demo: 'recursion',
-            step: index + 1,
-            description: `factorial(${call.n}) - ${call.status === 'calling' ? 'making call' : call.status === 'base' ? 'base case reached' : 'returning ' + call.result}`,
-            operation: 'java-demo',
-            currentCall: call,
-            callStack: RECURSION_EXAMPLE.calls.slice(0, index + 1).filter(c => c.step <= index && (c.status === 'calling' || c.status === 'base'))
-          })
-        })
-        break
-    }
-    
-    return steps
-  }, [])
 
   const handleDemoChange = (demo) => {
     setCurrentDemo(demo)
-    const steps = generateVisualizationSteps(demo)
-    setVisualizationData(steps, `java-${demo}`)
   }
 
-  useEffect(() => {
-    const currentStep = state.visualizationData[state.currentStep]
-    if (currentStep && state.visualizationContext?.startsWith('java-')) {
-      if (currentStep.demo === 'exceptions') {
-        setExceptionStep(currentStep.step || 0)
-      } else if (currentStep.demo === 'recursion') {
-        setRecursionStep(currentStep.step || 0)
-      } else if (currentStep.demo === 'generics' && currentStep.currentOperation) {
-        if (currentStep.valid) {
-          setGenericsData(prev => ({
-            ...prev,
-            items: [...prev.items, currentStep.currentOperation.value]
-          }))
-        }
-      }
-    }
-  }, [state.currentStep, state.visualizationData, state.visualizationContext])
 
   const renderGenerics = () => {
-    const currentStep = state.visualizationData[state.currentStep]
-    const currentOperation = currentStep?.currentOperation
 
     return (
       <div className="w-full bg-white rounded-lg shadow-sm p-6">
@@ -513,10 +426,6 @@ printNumbers(integers); // Works with any Number subtype`}</code>
   }
 
   const renderExceptions = () => {
-    const currentStep = state.visualizationData[state.currentStep]
-    const currentBlock = currentStep?.currentBlock
-    const currentLine = currentStep?.currentLine
-    const status = currentStep?.status
 
     return (
       <div className="w-full bg-white rounded-lg shadow-sm p-6">
@@ -598,9 +507,6 @@ printNumbers(integers); // Works with any Number subtype`}</code>
   }
 
   const renderRecursion = () => {
-    const currentStep = state.visualizationData[state.currentStep]
-    const callStack = currentStep?.callStack || []
-    const currentCall = currentStep?.currentCall
 
     return (
       <div className="w-full bg-white rounded-lg shadow-sm p-6">
@@ -741,8 +647,12 @@ printNumbers(integers); // Works with any Number subtype`}</code>
 
       {/* Comprehensive Java Features Education - Static Content Below */}
       <div className="mt-8 space-y-4">
-        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-          <h3 className="font-semibold text-green-800 mb-3">Advanced Java Features for SE2205A</h3>
+        <CollapsibleSection 
+          title="Advanced Java Features for SE2205A" 
+          bgColor="bg-green-50" 
+          borderColor="border-green-200" 
+          titleColor="text-green-800"
+        >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="space-y-2">
               <h4 className="font-semibold text-green-800">📦 Generics</h4>
@@ -766,10 +676,14 @@ printNumbers(integers); // Works with any Number subtype`}</code>
               </div>
             </div>
           </div>
-        </div>
+        </CollapsibleSection>
         
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="font-semibold text-blue-800 mb-2">🎯 Learning Objectives</h4>
+        <CollapsibleSection 
+          title="🎯 Learning Objectives" 
+          bgColor="bg-blue-50" 
+          borderColor="border-blue-200" 
+          titleColor="text-blue-800"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-700">
             <ul className="space-y-1">
               <li>• Understand type safety with generics and wildcard types</li>
@@ -782,25 +696,9 @@ printNumbers(integers); // Works with any Number subtype`}</code>
               <li>• Analyze recursive complexity and avoid stack overflow</li>
             </ul>
           </div>
-        </div>
+        </CollapsibleSection>
       </div>
 
-      {/* Current Operation Description */}
-      <AnimatePresence>
-        {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && 
-        state.visualizationContext?.startsWith('java-') && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center"
-          >
-            <p className="text-blue-800 font-medium">
-              {state.visualizationData[state.currentStep].description}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }

@@ -1,12 +1,13 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useApp } from '../contexts/AppContext'
-import SimpleControlPanel from '../components/SimpleControlPanel'
+import ConditionalControlPanel from '../components/ConditionalControlPanel'
 import BigOVisualization from '../components/visualizations/BigOVisualization'
 import AlgorithmBenchmark from '../components/visualizations/AlgorithmBenchmark'
 import TopicOverviewGrid from '../components/common/TopicOverviewGrid'
 import BreadcrumbNavigation from '../components/common/BreadcrumbNavigation'
 import EducationalContent from '../components/common/EducationalContent'
+import CollapsibleSection from '../components/common/CollapsibleSection'
 
 const topics = [
   {
@@ -20,12 +21,6 @@ const topics = [
     path: 'performance',
     description: 'Empirical Testing and Benchmarking',
     icon: '⏱️'
-  },
-  {
-    title: 'Trade-offs',
-    path: 'tradeoffs',
-    description: 'Space vs Time Complexity Decisions',
-    icon: '⚖️'
   }
 ]
 
@@ -43,8 +38,12 @@ function TopicOverview() {
 
       {/* Key Concepts */}
       <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="font-semibold text-blue-800 mb-3">Time Complexity</h3>
+        <CollapsibleSection 
+          title="Time Complexity" 
+          bgColor="bg-blue-50" 
+          borderColor="border-blue-200" 
+          titleColor="text-blue-800"
+        >
           <div className="text-sm text-blue-700 space-y-2">
             <div><strong>O(1)</strong> - Constant time, independent of input size</div>
             <div><strong>O(log n)</strong> - Logarithmic, divides problem in half</div>
@@ -52,10 +51,14 @@ function TopicOverview() {
             <div><strong>O(n²)</strong> - Quadratic, nested operations</div>
             <div><strong>O(2ⁿ)</strong> - Exponential, computationally expensive</div>
           </div>
-        </div>
+        </CollapsibleSection>
 
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-          <h3 className="font-semibold text-green-800 mb-3">Analysis Goals</h3>
+        <CollapsibleSection 
+          title="Analysis Goals" 
+          bgColor="bg-green-50" 
+          borderColor="border-green-200" 
+          titleColor="text-green-800"
+        >
           <div className="text-sm text-green-700 space-y-2">
             <div>• Predict algorithm scalability</div>
             <div>• Compare different approaches</div>
@@ -63,7 +66,7 @@ function TopicOverview() {
             <div>• Make informed design decisions</div>
             <div>• Optimize critical code paths</div>
           </div>
-        </div>
+        </CollapsibleSection>
       </div>
     </div>
   )
@@ -152,7 +155,7 @@ function PerformanceMeasurement() {
         </p>
       </div>
 
-      {/* Visualization Area */}
+      {/* Visualization */}
       <div className="card">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -163,12 +166,10 @@ function PerformanceMeasurement() {
         <div className="min-h-[600px]">
           <AlgorithmBenchmark />
         </div>
-        
-        {/* Simple Control Panel for Step-by-step playback */}
-        <div className="mt-6">
-          <SimpleControlPanel />
-        </div>
       </div>
+
+      {/* Control Panel */}
+      <ConditionalControlPanel />
 
       {/* Educational Content */}
       <EducationalContent
@@ -207,97 +208,6 @@ function PerformanceMeasurement() {
   )
 }
 
-function TradeOffs() {
-  const { clearData } = useApp()
-
-  useEffect(() => {
-    clearData()
-  }, [clearData])
-
-  return (
-    <div className="max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Algorithm Trade-offs</h1>
-        <p className="text-lg text-gray-600">
-          Explore the trade-offs between space and time complexity in algorithm design.
-        </p>
-      </div>
-
-      {/* Combined Visualization Area */}
-      <div className="space-y-8">
-        {/* Big O Comparison */}
-        <div className="card">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Complexity Trade-offs Visualization
-            </h2>
-            <p className="text-gray-600 mt-2">
-              Compare different algorithms to understand time vs space trade-offs
-            </p>
-          </div>
-          
-          <div className="min-h-[400px]">
-            <BigOVisualization />
-          </div>
-        </div>
-
-        {/* Performance Comparison */}
-        <div className="card">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Real-World Performance Trade-offs
-            </h2>
-            <p className="text-gray-600 mt-2">
-              Benchmark different algorithms to see practical performance differences
-            </p>
-          </div>
-          
-          <div className="min-h-[400px]">
-            <AlgorithmBenchmark />
-          </div>
-          
-          <div className="mt-6">
-            <SimpleControlPanel />
-          </div>
-        </div>
-      </div>
-
-      {/* Educational Content */}
-      <EducationalContent
-        leftContent={{
-          title: "Common Trade-offs",
-          content: (
-            <>
-              <div className="space-y-2">
-                <div><strong>Time vs Space:</strong> Faster algorithms often use more memory</div>
-                <div><strong>Simplicity vs Performance:</strong> Complex optimizations vs readable code</div>
-                <div><strong>Best vs Worst Case:</strong> Average performance vs guaranteed bounds</div>
-                <div><strong>Memory vs CPU:</strong> Caching vs recalculation strategies</div>
-              </div>
-              <div className="mt-4 p-3 bg-orange-50 rounded">
-                <strong>Rule:</strong> Optimize based on your specific constraints and use case
-              </div>
-            </>
-          )
-        }}
-        rightContent={{
-          title: "Design Decisions",
-          content: (
-            <>
-              <div className="space-y-2">
-                <div><strong>Small Data:</strong> Simple algorithms often sufficient</div>
-                <div><strong>Large Data:</strong> Complexity dominates performance</div>
-                <div><strong>Memory Limited:</strong> Favor space-efficient algorithms</div>
-                <div><strong>Real-time:</strong> Consistent performance over average case</div>
-                <div><strong>Development Time:</strong> Balance optimization effort vs benefit</div>
-              </div>
-            </>
-          )
-        }}
-      />
-    </div>
-  )
-}
 
 export default function AlgorithmAnalysis() {
   const location = useLocation()
@@ -319,7 +229,6 @@ export default function AlgorithmAnalysis() {
         <Route path="/" element={<TopicOverview />} />
         <Route path="/complexity" element={<ComplexityAnalysis />} />
         <Route path="/performance" element={<PerformanceMeasurement />} />
-        <Route path="/tradeoffs" element={<TradeOffs />} />
       </Routes>
     </div>
   )

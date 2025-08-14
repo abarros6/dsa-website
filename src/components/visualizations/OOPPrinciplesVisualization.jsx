@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useApp } from '../../contexts/AppContext'
 import Quiz from '../Quiz'
+import CollapsibleSection from '../common/CollapsibleSection'
 
 const OOP_COLORS = {
   class: '#3b82f6',
@@ -295,88 +295,15 @@ System.out.println(animal.makeSound());`,
 ]
 
 export default function OOPPrinciplesVisualization() {
-  const { state, setVisualizationData } = useApp()
   const [currentDemo, setCurrentDemo] = useState('hierarchy')
   const [selectedClass, setSelectedClass] = useState(null)
   const [animationStep, setAnimationStep] = useState(0)
   const [polymorphismDemo, setPolymorphismDemo] = useState({ animal: 'Dog', result: '' })
+  const [accessLevel, setAccessLevel] = useState('all')
 
-  const generateVisualizationSteps = useCallback((demo, data) => {
-    const steps = []
-    
-    switch (demo) {
-      case 'hierarchy':
-        steps.push({
-          demo: 'hierarchy',
-          step: 0,
-          description: 'Object-Oriented Class Hierarchy - Shows inheritance relationships',
-          highlightedClasses: [],
-          operation: 'oop-demo'
-        })
-        
-        Object.keys(CLASS_HIERARCHY).forEach((className, index) => {
-          steps.push({
-            demo: 'hierarchy',
-            step: index + 1,
-            description: `Exploring ${className} - ${CLASS_HIERARCHY[className].type}`,
-            highlightedClasses: [className],
-            selectedClass: className,
-            operation: 'oop-demo'
-          })
-        })
-        break
-        
-      case 'polymorphism':
-        steps.push({
-          demo: 'polymorphism',
-          step: 0,
-          description: 'Polymorphism Demo - Same method, different implementations',
-          currentAnimal: null,
-          result: '',
-          operation: 'oop-demo'
-        })
-        
-        Object.keys(POLYMORPHISM_EXAMPLE.implementations).forEach((animal, index) => {
-          steps.push({
-            demo: 'polymorphism',
-            step: index + 1,
-            description: `${animal}.makeSound() called`,
-            currentAnimal: animal,
-            result: POLYMORPHISM_EXAMPLE.implementations[animal],
-            operation: 'oop-demo'
-          })
-        })
-        break
-        
-      case 'encapsulation':
-        steps.push({
-          demo: 'encapsulation',
-          step: 0,
-          description: 'Encapsulation - Controlling access to class members',
-          accessLevel: 'all',
-          operation: 'oop-demo'
-        })
-        
-        const accessLevels = ['private', 'protected', 'public']
-        accessLevels.forEach((level, index) => {
-          steps.push({
-            demo: 'encapsulation',
-            step: index + 1,
-            description: `Showing ${level} members only`,
-            accessLevel: level,
-            operation: 'oop-demo'
-          })
-        })
-        break
-    }
-    
-    return steps
-  }, [])
 
   const handleDemoChange = (demo) => {
     setCurrentDemo(demo)
-    const steps = generateVisualizationSteps(demo)
-    setVisualizationData(steps, `oop-${demo}`)
   }
 
   const handlePolymorphismCall = (animal) => {
@@ -386,21 +313,6 @@ export default function OOPPrinciplesVisualization() {
     })
   }
 
-  useEffect(() => {
-    const currentStep = state.visualizationData[state.currentStep]
-    if (currentStep && state.visualizationContext?.startsWith('oop-')) {
-      setAnimationStep(currentStep.step || 0)
-      if (currentStep.selectedClass) {
-        setSelectedClass(currentStep.selectedClass)
-      }
-      if (currentStep.currentAnimal) {
-        setPolymorphismDemo({
-          animal: currentStep.currentAnimal,
-          result: currentStep.result
-        })
-      }
-    }
-  }, [state.currentStep, state.visualizationData, state.visualizationContext])
 
   const renderClassHierarchy = () => {
     return (
@@ -568,44 +480,11 @@ export default function OOPPrinciplesVisualization() {
   }
 
   const renderEncapsulation = () => {
-    const currentStep = state.visualizationData[state.currentStep]
-    const accessLevel = currentStep?.accessLevel || 'all'
     
     return (
       <div className="w-full bg-white rounded-lg shadow-sm p-6">
         <h3 className="text-lg font-semibold mb-4 text-center">Encapsulation - Access Control & Data Hiding</h3>
         
-        {/* Educational Content */}
-        <div className="mb-6 space-y-4\">
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <h4 className="font-semibold text-amber-800 mb-2">🎯 Learning Objectives</h4>
-            <ul className="text-sm text-amber-700 space-y-1">
-              <li>• Understand how access modifiers control visibility of class members</li>
-              <li>• Learn the principle of data hiding and why it's important</li>
-              <li>• See how encapsulation promotes code security and maintainability</li>
-              <li>• Practice identifying appropriate access levels for different scenarios</li>
-            </ul>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm">
-            <div className="p-3 bg-red-50 border border-red-200 rounded">
-              <h5 className="font-semibold text-red-800">🔒 Private</h5>
-              <p className="text-red-700">Only accessible within the same class. Use for internal implementation details.</p>
-            </div>
-            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
-              <h5 className="font-semibold text-yellow-800">🔓 Protected</h5>
-              <p className="text-yellow-700">Accessible within package and by subclasses. Use for inheritance relationships.</p>
-            </div>
-            <div className="p-3 bg-green-50 border border-green-200 rounded">
-              <h5 className="font-semibold text-green-800">🌍 Public</h5>
-              <p className="text-green-700">Accessible from anywhere. Use for class interface (API).</p>
-            </div>
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded">
-              <h5 className="font-semibold text-blue-800">📦 Package</h5>
-              <p className="text-blue-700">Default access. Accessible within the same package only.</p>
-            </div>
-          </div>
-        </div>
         
         <div className="max-w-2xl mx-auto">
           <div className="bg-gray-100 rounded-lg p-6">
@@ -665,12 +544,7 @@ export default function OOPPrinciplesVisualization() {
             {['all', 'public', 'protected', 'private'].map(level => (
               <button
                 key={level}
-                onClick={() => setVisualizationData([{
-                  demo: 'encapsulation',
-                  accessLevel: level,
-                  description: `Showing ${level} members ${level === 'all' ? '' : 'only'}`,
-                  operation: 'oop-demo'
-                }], 'oop-encapsulation')}
+                onClick={() => setAccessLevel(level)}
                 className={`px-3 py-1 rounded text-sm ${
                   accessLevel === level
                     ? 'bg-blue-500 text-white'
@@ -682,71 +556,6 @@ export default function OOPPrinciplesVisualization() {
             ))}
           </div>
           
-          {/* Best Practices Section */}
-          <div className="mt-6 space-y-4">
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-              <h5 className="font-semibold text-green-800 mb-2">✅ Encapsulation Best Practices</h5>
-              <div className="text-sm text-green-700 space-y-2">
-                <div><strong>1. Make fields private:</strong> Always use private access for instance variables to prevent direct manipulation.</div>
-                <div><strong>2. Provide public methods:</strong> Use getter/setter methods to control access to private fields.</div>
-                <div><strong>3. Validate input:</strong> Use setter methods to validate data before modifying private fields.</div>
-                <div><strong>4. Minimize public interface:</strong> Only expose methods that clients actually need to use.</div>
-              </div>
-            </div>
-            
-            <div className="p-4 bg-gray-900 text-gray-100 rounded-lg">
-              <h5 className="font-semibold text-yellow-400 mb-2">Example: Proper Encapsulation</h5>
-              <pre className="text-sm overflow-x-auto">
-                <code>{`public class BankAccount {
-    private double balance;           // Private - can't be accessed directly
-    private String accountNumber;     // Private - internal data
-    protected List<Transaction> transactionHistory;  // Protected - for subclasses
-    
-    // Public methods provide controlled access
-    public boolean deposit(double amount) {
-        if (amount > 0) {  // Validation
-            balance += amount;
-            transactionHistory.add(new Transaction("DEPOSIT", amount));
-            return true;
-        }
-        return false;
-    }
-    
-    public boolean withdraw(double amount) {
-        if (validateTransaction(amount)) {  // Use private helper
-            updateBalance(-amount);
-            return true;
-        }
-        return false;
-    }
-    
-    public double getBalance() {  // Read-only access to balance
-        return balance;
-    }
-    
-    // Private helper methods - implementation details
-    private boolean validateTransaction(double amount) {
-        return amount > 0 && amount <= balance;
-    }
-    
-    private void updateBalance(double amount) {
-        balance += amount;
-        transactionHistory.add(new Transaction("UPDATE", amount));
-    }
-}`}</code>
-              </pre>
-            </div>
-            
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <h5 className="font-semibold text-red-800 mb-2">⚠️ Common Encapsulation Mistakes</h5>
-              <div className="text-sm text-red-700 space-y-1">
-                <div>• Making all fields public (breaks encapsulation)</div>
-                <div>• Returning mutable objects directly from getters</div>
-                <div>• Not validating input in setter methods</div>
-                <div>• Exposing internal implementation details through public methods</div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     )
@@ -757,43 +566,6 @@ export default function OOPPrinciplesVisualization() {
       <div className="w-full bg-white rounded-lg shadow-sm p-6">
         <h3 className="text-lg font-semibold mb-4 text-center">Polymorphism - Same Interface, Different Behavior</h3>
         
-        {/* Educational Introduction */}
-        <div className="mb-6 space-y-4">
-          <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-            <h4 className="font-semibold text-purple-800 mb-2">🔄 Understanding Polymorphism</h4>
-            <p className="text-sm text-purple-700 mb-3">
-              Polymorphism allows objects of different types to be treated as instances of the same type through a common interface. 
-              The actual method called is determined at runtime based on the object's actual type.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <h5 className="font-semibold text-purple-800">Compile-time Polymorphism:</h5>
-                <ul className="text-purple-700 list-disc list-inside">
-                  <li>Method Overloading</li>
-                  <li>Operator Overloading</li>
-                  <li>Resolved at compile time</li>
-                </ul>
-              </div>
-              <div>
-                <h5 className="font-semibold text-purple-800">Runtime Polymorphism:</h5>
-                <ul className="text-purple-700 list-disc list-inside">
-                  <li>Method Overriding</li>
-                  <li>Dynamic Method Dispatch</li>
-                  <li>Resolved at runtime</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h5 className="font-semibold text-blue-800 mb-2">💡 Key Concepts</h5>
-            <div className="text-sm text-blue-700 space-y-1">
-              <div><strong>Dynamic Binding:</strong> The correct method is chosen at runtime based on the actual object type</div>
-              <div><strong>Method Overriding:</strong> Subclasses provide specific implementations of parent class methods</div>
-              <div><strong>Liskov Substitution:</strong> Objects of a superclass should be replaceable with objects of a subclass</div>
-            </div>
-          </div>
-        </div>
         
         <div className="max-w-4xl mx-auto">
           {/* Base Class */}
@@ -851,104 +623,6 @@ export default function OOPPrinciplesVisualization() {
             )}
           </AnimatePresence>
           
-          {/* Detailed Explanation and Code Examples */}
-          <div className="mt-8 space-y-4">
-            <div className="p-4 bg-gray-900 text-gray-100 rounded-lg">
-              <h5 className="font-semibold text-yellow-400 mb-2">Complete Polymorphism Example:</h5>
-              <pre className="text-sm overflow-x-auto">
-                <code>{`// Base class with abstract method
-abstract class Animal {
-    protected String name;
-    
-    public Animal(String name) {
-        this.name = name;
-    }
-    
-    // Abstract method - must be overridden
-    public abstract String makeSound();
-    
-    // Concrete method - can be overridden
-    public void sleep() {
-        System.out.println(name + " is sleeping");
-    }
-}
-
-// Concrete implementations
-class Dog extends Animal {
-    public Dog(String name) { super(name); }
-    
-    @Override
-    public String makeSound() {
-        return "Woof! Woof!";
-    }
-}
-
-class Cat extends Animal {
-    public Cat(String name) { super(name); }
-    
-    @Override
-    public String makeSound() {
-        return "Meow! Purr...";
-    }
-    
-    @Override
-    public void sleep() {
-        System.out.println(name + " curls up and sleeps 16 hours");
-    }
-}
-
-// Polymorphism in action
-public class PolymorphismDemo {
-    public static void main(String[] args) {
-        // Same reference type, different object types
-        Animal[] animals = {
-            new Dog("Buddy"),
-            new Cat("Whiskers"),
-            new Bird("Tweety")
-        };
-        
-        // Polymorphic method calls
-        for (Animal animal : animals) {
-            System.out.println(animal.makeSound()); // Calls correct implementation
-            animal.sleep(); // May call overridden version
-        }
-    }
-}`}</code>
-              </pre>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <h5 className="font-semibold text-green-800 mb-2">✅ Benefits of Polymorphism</h5>
-                <div className="text-sm text-green-700 space-y-1">
-                  <div>• <strong>Flexibility:</strong> Easy to add new types without changing existing code</div>
-                  <div>• <strong>Maintainability:</strong> Changes to implementation don't affect client code</div>
-                  <div>• <strong>Extensibility:</strong> New classes can be added that work with existing systems</div>
-                  <div>• <strong>Code Reuse:</strong> Same code can work with multiple object types</div>
-                </div>
-              </div>
-              
-              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <h5 className="font-semibold text-yellow-800 mb-2">🔧 Implementation Requirements</h5>
-                <div className="text-sm text-yellow-700 space-y-1">
-                  <div>• Use <code>@Override</code> annotation for clarity</div>
-                  <div>• Maintain method signature exactly (name, parameters, return type)</div>
-                  <div>• Cannot reduce visibility (public → private)</div>
-                  <div>• Can expand exceptions but not add new checked exceptions</div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <h5 className="font-semibold text-red-800 mb-2">⚠️ Common Polymorphism Pitfalls</h5>
-              <div className="text-sm text-red-700 space-y-1">
-                <div>• <strong>Method Hiding:</strong> Using static methods instead of instance methods for polymorphism</div>
-                <div>• <strong>Constructor Calls:</strong> Calling overridable methods in constructors can be dangerous</div>
-                <div>• <strong>Type Casting:</strong> Unnecessary downcasting defeats the purpose of polymorphism</div>
-                <div>• <strong>Final Methods:</strong> Final methods cannot be overridden, breaking polymorphism</div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     )
@@ -1021,48 +695,228 @@ public class PolymorphismDemo {
 
       {/* Comprehensive OOP Education Section - Static Content Below */}
       <div className="mt-8 space-y-4">
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h3 className="font-semibold text-blue-800 mb-3">The Four Pillars of Object-Oriented Programming</h3>
+        <CollapsibleSection 
+          title="The Four Pillars of Object-Oriented Programming" 
+          bgColor="bg-gray-50" 
+          borderColor="border-gray-200" 
+          titleColor="text-gray-800"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="space-y-3">
               <div>
-                <h4 className="font-semibold text-blue-800">1. Inheritance 🏗️</h4>
-                <p className="text-blue-700">Enables code reuse by allowing classes to inherit attributes and methods from parent classes. Creates "is-a" relationships.</p>
-                <div className="mt-1 p-2 bg-white rounded text-xs font-mono">
-                  class Car extends Vehicle {'{'}...{'}'}
+                <h4 className="font-semibold text-gray-800">1. Inheritance 🏗️</h4>
+                <p className="text-gray-700">Enables code reuse by allowing classes to inherit attributes and methods from parent classes. Creates "is-a" relationships.</p>
+                <div className="mt-1 p-2 bg-gray-900 rounded text-xs font-mono">
+                  <span className="text-blue-400">class</span> <span className="text-yellow-400">Car</span> <span className="text-purple-400">extends</span> <span className="text-yellow-400">Vehicle</span> <span className="text-gray-300">{'{'}</span>...<span className="text-gray-300">{'}'}</span>
                 </div>
               </div>
               <div>
-                <h4 className="font-semibold text-blue-800">2. Encapsulation 🔒</h4>
-                <p className="text-blue-700">Bundles data and methods together while hiding internal implementation. Controls access through visibility modifiers.</p>
-                <div className="mt-1 p-2 bg-white rounded text-xs font-mono">
-                  private double balance;<br/>public void deposit(double amount)
+                <h4 className="font-semibold text-gray-800">2. Encapsulation 🔒</h4>
+                <p className="text-gray-700">Bundles data and methods together while hiding internal implementation. Controls access through visibility modifiers.</p>
+                <div className="mt-1 p-2 bg-gray-900 rounded text-xs font-mono">
+                  <span className="text-red-400">private</span> <span className="text-blue-400">double</span> <span className="text-white">balance</span><span className="text-gray-300">;</span><br/>
+                  <span className="text-green-400">public</span> <span className="text-blue-400">void</span> <span className="text-yellow-400">deposit</span><span className="text-gray-300">(</span><span className="text-blue-400">double</span> <span className="text-white">amount</span><span className="text-gray-300">)</span>
                 </div>
               </div>
             </div>
             <div className="space-y-3">
               <div>
-                <h4 className="font-semibold text-blue-800">3. Polymorphism 🔄</h4>
-                <p className="text-blue-700">Allows objects of different types to be treated uniformly. Same interface, different implementations.</p>
-                <div className="mt-1 p-2 bg-white rounded text-xs font-mono">
-                  Animal animal = new Dog();<br/>animal.makeSound(); // "Woof!"
+                <h4 className="font-semibold text-gray-800">3. Polymorphism 🔄</h4>
+                <p className="text-gray-700">Allows objects of different types to be treated uniformly. Same interface, different implementations.</p>
+                <div className="mt-1 p-2 bg-gray-900 rounded text-xs font-mono">
+                  <span className="text-yellow-400">Animal</span> <span className="text-white">animal</span> <span className="text-gray-300">=</span> <span className="text-purple-400">new</span> <span className="text-yellow-400">Dog</span><span className="text-gray-300">();</span><br/>
+                  <span className="text-white">animal</span><span className="text-gray-300">.</span><span className="text-yellow-400">makeSound</span><span className="text-gray-300">();</span> <span className="text-green-500">// "Woof!"</span>
                 </div>
               </div>
               <div>
-                <h4 className="font-semibold text-blue-800">4. Abstraction 🎭</h4>
-                <p className="text-blue-700">Hides complex implementation details and shows only essential features. Focuses on what an object does, not how.</p>
-                <div className="mt-1 p-2 bg-white rounded text-xs font-mono">
-                  abstract class Shape {'{'}...{'}'}<br/>interface Drawable {'{'}...{'}'}
+                <h4 className="font-semibold text-gray-800">4. Abstraction 🎭</h4>
+                <p className="text-gray-700">Hides complex implementation details and shows only essential features. Focuses on what an object does, not how.</p>
+                <div className="mt-1 p-2 bg-gray-900 rounded text-xs font-mono">
+                  <span className="text-purple-400">abstract</span> <span className="text-blue-400">class</span> <span className="text-yellow-400">Shape</span> <span className="text-gray-300">{'{'}</span>...<span className="text-gray-300">{'}'}</span><br/>
+                  <span className="text-blue-400">interface</span> <span className="text-yellow-400">Drawable</span> <span className="text-gray-300">{'{'}</span>...<span className="text-gray-300">{'}'}</span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </CollapsibleSection>
 
-        {/* Why OOP Matters */}
-        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-          <h3 className="font-semibold text-green-800 mb-2">Why Object-Oriented Programming?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-green-700">
+        <CollapsibleSection 
+          title="🎯 Learning Objectives & Access Modifiers" 
+          bgColor="bg-gray-50" 
+          borderColor="border-gray-200" 
+          titleColor="text-gray-800"
+        >
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-semibold text-gray-800 mb-2">Learning Objectives</h4>
+              <ul className="text-sm text-gray-700 space-y-1">
+                <li>• Understand how access modifiers control visibility of class members</li>
+                <li>• Learn the principle of data hiding and why it's important</li>
+                <li>• See how encapsulation promotes code security and maintainability</li>
+                <li>• Practice identifying appropriate access levels for different scenarios</li>
+              </ul>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm">
+              <div className="p-3 bg-white border border-gray-300 rounded">
+                <h5 className="font-semibold text-gray-800">🔒 Private</h5>
+                <p className="text-gray-600">Only accessible within the same class. Use for internal implementation details.</p>
+              </div>
+              <div className="p-3 bg-white border border-gray-300 rounded">
+                <h5 className="font-semibold text-gray-800">🔓 Protected</h5>
+                <p className="text-gray-600">Accessible within package and by subclasses. Use for inheritance relationships.</p>
+              </div>
+              <div className="p-3 bg-white border border-gray-300 rounded">
+                <h5 className="font-semibold text-gray-800">🌍 Public</h5>
+                <p className="text-gray-600">Accessible from anywhere. Use for class interface (API).</p>
+              </div>
+              <div className="p-3 bg-white border border-gray-300 rounded">
+                <h5 className="font-semibold text-gray-800">📦 Package</h5>
+                <p className="text-gray-600">Default access. Accessible within the same package only.</p>
+              </div>
+            </div>
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection 
+          title="🔄 Understanding Polymorphism & Key Concepts" 
+          bgColor="bg-gray-50" 
+          borderColor="border-gray-200" 
+          titleColor="text-gray-800"
+        >
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-semibold text-gray-800 mb-2">Understanding Polymorphism</h4>
+              <p className="text-sm text-gray-700 mb-3">
+                Polymorphism allows objects of different types to be treated as instances of the same type through a common interface. 
+                The actual method called is determined at runtime based on the object's actual type.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <h5 className="font-semibold text-gray-800">Compile-time Polymorphism:</h5>
+                  <ul className="text-gray-700 list-disc list-inside">
+                    <li>Method Overloading</li>
+                    <li>Operator Overloading</li>
+                    <li>Resolved at compile time</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-semibold text-gray-800">Runtime Polymorphism:</h5>
+                  <ul className="text-gray-700 list-disc list-inside">
+                    <li>Method Overriding</li>
+                    <li>Dynamic Method Dispatch</li>
+                    <li>Resolved at runtime</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4 bg-white border border-gray-300 rounded-lg">
+              <h5 className="font-semibold text-gray-800 mb-2">💡 Key Concepts</h5>
+              <div className="text-sm text-gray-700 space-y-1">
+                <div><strong>Dynamic Binding:</strong> The correct method is chosen at runtime based on the actual object type</div>
+                <div><strong>Method Overriding:</strong> Subclasses provide specific implementations of parent class methods</div>
+                <div><strong>Liskov Substitution:</strong> Objects of a superclass should be replaceable with objects of a subclass</div>
+              </div>
+            </div>
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection 
+          title="📚 Best Practices & Code Examples" 
+          bgColor="bg-gray-50" 
+          borderColor="border-gray-200" 
+          titleColor="text-gray-800"
+        >
+          <div className="space-y-4">
+            <div className="p-4 bg-white border border-gray-300 rounded-lg">
+              <h5 className="font-semibold text-gray-800 mb-2">✅ Encapsulation Best Practices</h5>
+              <div className="text-sm text-gray-700 space-y-2">
+                <div><strong>1. Make fields private:</strong> Always use private access for instance variables to prevent direct manipulation.</div>
+                <div><strong>2. Provide public methods:</strong> Use getter/setter methods to control access to private fields.</div>
+                <div><strong>3. Validate input:</strong> Use setter methods to validate data before modifying private fields.</div>
+                <div><strong>4. Minimize public interface:</strong> Only expose methods that clients actually need to use.</div>
+              </div>
+            </div>
+            
+            <div className="p-4 bg-gray-900 text-gray-100 rounded-lg">
+              <h5 className="font-semibold text-yellow-400 mb-2">Complete Java Examples with Syntax Highlighting:</h5>
+              <pre className="text-sm overflow-x-auto">
+                <code>
+                  <span className="text-green-500">// Encapsulation Example</span>{'\n'}
+                  <span className="text-blue-400">public class</span> <span className="text-yellow-400">BankAccount</span> <span className="text-gray-300">{'{'}</span>{'\n'}
+                  {'    '}<span className="text-red-400">private</span> <span className="text-blue-400">double</span> <span className="text-white">balance</span><span className="text-gray-300">;</span>           <span className="text-green-500">// Private - can't be accessed directly</span>{'\n'}
+                  {'    '}<span className="text-red-400">private</span> <span className="text-yellow-400">String</span> <span className="text-white">accountNumber</span><span className="text-gray-300">;</span>     <span className="text-green-500">// Private - internal data</span>{'\n'}
+                  {'    '}<span className="text-orange-400">protected</span> <span className="text-yellow-400">List</span><span className="text-gray-300">{'<'}</span><span className="text-yellow-400">Transaction</span><span className="text-gray-300">{'>'}</span> <span className="text-white">transactionHistory</span><span className="text-gray-300">;</span>  <span className="text-green-500">// Protected - for subclasses</span>{'\n\n'}
+                  {'    '}<span className="text-green-500">// Public methods provide controlled access</span>{'\n'}
+                  {'    '}<span className="text-green-400">public</span> <span className="text-blue-400">boolean</span> <span className="text-yellow-400">deposit</span><span className="text-gray-300">(</span><span className="text-blue-400">double</span> <span className="text-white">amount</span><span className="text-gray-300">) {'{'}</span>{'\n'}
+                  {'        '}<span className="text-purple-400">if</span> <span className="text-gray-300">(</span><span className="text-white">amount</span> <span className="text-gray-300">></span> <span className="text-cyan-400">0</span><span className="text-gray-300">) {'{'}</span>  <span className="text-green-500">// Validation</span>{'\n'}
+                  {'            '}<span className="text-white">balance</span> <span className="text-gray-300">+=</span> <span className="text-white">amount</span><span className="text-gray-300">;</span>{'\n'}
+                  {'            '}<span className="text-white">transactionHistory</span><span className="text-gray-300">.</span><span className="text-yellow-400">add</span><span className="text-gray-300">(</span><span className="text-purple-400">new</span> <span className="text-yellow-400">Transaction</span><span className="text-gray-300">(</span><span className="text-green-300">"DEPOSIT"</span><span className="text-gray-300">,</span> <span className="text-white">amount</span><span className="text-gray-300">));</span>{'\n'}
+                  {'            '}<span className="text-purple-400">return</span> <span className="text-cyan-400">true</span><span className="text-gray-300">;</span>{'\n'}
+                  {'        '}<span className="text-gray-300">{'}'}</span>{'\n'}
+                  {'        '}<span className="text-purple-400">return</span> <span className="text-cyan-400">false</span><span className="text-gray-300">;</span>{'\n'}
+                  {'    '}<span className="text-gray-300">{'}'}</span>{'\n\n'}
+                  {'    '}<span className="text-green-400">public</span> <span className="text-blue-400">double</span> <span className="text-yellow-400">getBalance</span><span className="text-gray-300">() {'{'}</span>  <span className="text-green-500">// Read-only access to balance</span>{'\n'}
+                  {'        '}<span className="text-purple-400">return</span> <span className="text-white">balance</span><span className="text-gray-300">;</span>{'\n'}
+                  {'    '}<span className="text-gray-300">{'}'}</span>{'\n\n'}
+                  {'    '}<span className="text-green-500">// Private helper methods - implementation details</span>{'\n'}
+                  {'    '}<span className="text-red-400">private</span> <span className="text-blue-400">boolean</span> <span className="text-yellow-400">validateTransaction</span><span className="text-gray-300">(</span><span className="text-blue-400">double</span> <span className="text-white">amount</span><span className="text-gray-300">) {'{'}</span>{'\n'}
+                  {'        '}<span className="text-purple-400">return</span> <span className="text-white">amount</span> <span className="text-gray-300">></span> <span className="text-cyan-400">0</span> <span className="text-gray-300">&&</span> <span className="text-white">amount</span> <span className="text-gray-300">{'<='}</span> <span className="text-white">balance</span><span className="text-gray-300">;</span>{'\n'}
+                  {'    '}<span className="text-gray-300">{'}'}</span>{'\n'}
+                  <span className="text-gray-300">{'}'}</span>
+                </code>
+              </pre>
+            </div>
+            
+            <div className="p-4 bg-gray-900 text-gray-100 rounded-lg">
+              <h5 className="font-semibold text-yellow-400 mb-2">Polymorphism Example:</h5>
+              <pre className="text-sm overflow-x-auto">
+                <code>
+                  <span className="text-green-500">// Base class with abstract method</span>{'\n'}
+                  <span className="text-purple-400">abstract class</span> <span className="text-yellow-400">Animal</span> <span className="text-gray-300">{'{'}</span>{'\n'}
+                  {'    '}<span className="text-orange-400">protected</span> <span className="text-yellow-400">String</span> <span className="text-white">name</span><span className="text-gray-300">;</span>{'\n\n'}
+                  {'    '}<span className="text-green-400">public</span> <span className="text-yellow-400">Animal</span><span className="text-gray-300">(</span><span className="text-yellow-400">String</span> <span className="text-white">name</span><span className="text-gray-300">) {'{'}</span>{'\n'}
+                  {'        '}<span className="text-purple-400">this</span><span className="text-gray-300">.</span><span className="text-white">name</span> <span className="text-gray-300">=</span> <span className="text-white">name</span><span className="text-gray-300">;</span>{'\n'}
+                  {'    '}<span className="text-gray-300">{'}'}</span>{'\n\n'}
+                  {'    '}<span className="text-green-500">// Abstract method - must be overridden</span>{'\n'}
+                  {'    '}<span className="text-green-400">public</span> <span className="text-purple-400">abstract</span> <span className="text-yellow-400">String</span> <span className="text-yellow-400">makeSound</span><span className="text-gray-300">();</span>{'\n'}
+                  <span className="text-gray-300">{'}'}</span>{'\n\n'}
+                  <span className="text-green-500">// Concrete implementation</span>{'\n'}
+                  <span className="text-blue-400">class</span> <span className="text-yellow-400">Dog</span> <span className="text-purple-400">extends</span> <span className="text-yellow-400">Animal</span> <span className="text-gray-300">{'{'}</span>{'\n'}
+                  {'    '}<span className="text-green-400">public</span> <span className="text-yellow-400">Dog</span><span className="text-gray-300">(</span><span className="text-yellow-400">String</span> <span className="text-white">name</span><span className="text-gray-300">) {'{'}</span> <span className="text-purple-400">super</span><span className="text-gray-300">(</span><span className="text-white">name</span><span className="text-gray-300">);</span> <span className="text-gray-300">{'}'}</span>{'\n\n'}
+                  {'    '}<span className="text-orange-400">@Override</span>{'\n'}
+                  {'    '}<span className="text-green-400">public</span> <span className="text-yellow-400">String</span> <span className="text-yellow-400">makeSound</span><span className="text-gray-300">() {'{'}</span>{'\n'}
+                  {'        '}<span className="text-purple-400">return</span> <span className="text-green-300">"Woof! Woof!"</span><span className="text-gray-300">;</span>{'\n'}
+                  {'    '}<span className="text-gray-300">{'}'}</span>{'\n'}
+                  <span className="text-gray-300">{'}'}</span>{'\n\n'}
+                  <span className="text-green-500">// Polymorphism in action</span>{'\n'}
+                  <span className="text-yellow-400">Animal</span> <span className="text-white">animal</span> <span className="text-gray-300">=</span> <span className="text-purple-400">new</span> <span className="text-yellow-400">Dog</span><span className="text-gray-300">(</span><span className="text-green-300">"Buddy"</span><span className="text-gray-300">);</span>{'\n'}
+                  <span className="text-yellow-400">System</span><span className="text-gray-300">.</span><span className="text-white">out</span><span className="text-gray-300">.</span><span className="text-yellow-400">println</span><span className="text-gray-300">(</span><span className="text-white">animal</span><span className="text-gray-300">.</span><span className="text-yellow-400">makeSound</span><span className="text-gray-300">());</span> <span className="text-green-500">// Calls Dog's implementation</span>
+                </code>
+              </pre>
+            </div>
+
+            <div className="p-4 bg-white border border-gray-300 rounded-lg">
+              <h5 className="font-semibold text-gray-800 mb-2">⚠️ Common Mistakes to Avoid</h5>
+              <div className="text-sm text-gray-700 space-y-1">
+                <div>• Making all fields public (breaks encapsulation)</div>
+                <div>• Using static methods instead of instance methods for polymorphism</div>
+                <div>• Not validating input in setter methods</div>
+                <div>• Calling overridable methods in constructors</div>
+                <div>• Unnecessary downcasting that defeats polymorphism</div>
+              </div>
+            </div>
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection 
+          title="Why Object-Oriented Programming?" 
+          bgColor="bg-gray-50" 
+          borderColor="border-gray-200" 
+          titleColor="text-gray-800"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700">
             <div>
               <h4 className="font-semibold">Code Reusability</h4>
               <p>Inheritance and composition allow you to build upon existing code rather than starting from scratch.</p>
@@ -1076,25 +930,9 @@ public class PolymorphismDemo {
               <p>Modular design through objects makes large systems more manageable and extensible.</p>
             </div>
           </div>
-        </div>
+        </CollapsibleSection>
       </div>
 
-      {/* Current Operation Description */}
-      <AnimatePresence>
-        {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && 
-        state.visualizationContext?.startsWith('oop-') && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center"
-          >
-            <p className="text-blue-800 font-medium">
-              {state.visualizationData[state.currentStep].description}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }

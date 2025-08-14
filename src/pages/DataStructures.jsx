@@ -1,7 +1,7 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useApp } from '../contexts/AppContext'
-import SimpleControlPanel from '../components/SimpleControlPanel'
+import ConditionalControlPanel from '../components/ConditionalControlPanel'
 import ArrayVisualization from '../components/visualizations/ArrayVisualization'
 import StackVisualization from '../components/visualizations/StackVisualization'
 import QueueVisualization from '../components/visualizations/QueueVisualization'
@@ -17,6 +17,7 @@ import BreadcrumbNavigation from '../components/common/BreadcrumbNavigation'
 import UnderDevelopmentBanner from '../components/common/UnderDevelopmentBanner'
 import AlgorithmSelector from '../components/common/AlgorithmSelector'
 import EducationalContent from '../components/common/EducationalContent'
+import HashTableVisualization from '../components/visualizations/HashTableVisualization'
 
 const topics = [
   {
@@ -122,7 +123,7 @@ function LinearStructures() {
         />
       </div>
 
-      {/* Visualization Area */}
+      {/* Visualization */}
       <div className="card">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -133,13 +134,10 @@ function LinearStructures() {
         <div className="min-h-[400px]">
           {CurrentComponent && <CurrentComponent />}
         </div>
-        
-        {/* Simple Control Panel for Step-by-step playback */}
-        {/* need to only render this if the user attempts a search */}
-        <div className="mt-6">
-          <SimpleControlPanel />
-        </div>
       </div>
+
+      {/* Control Panel */}
+      <ConditionalControlPanel />
 
       {/* Educational Content */}
       <EducationalContent
@@ -257,7 +255,7 @@ function Trees() {
         />
       </div>
 
-      {/* Visualization Area */}
+      {/* Visualization */}
       <div className="card">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -268,12 +266,10 @@ function Trees() {
         <div className="min-h-[500px]">
           {CurrentComponent && <CurrentComponent />}
         </div>
-        
-        {/* Simple Control Panel for Step-by-step playback */}
-        <div className="mt-6">
-          <SimpleControlPanel />
-        </div>
       </div>
+
+      {/* Control Panel */}
+      <ConditionalControlPanel />
 
       {/* Educational Content */}
       <EducationalContent
@@ -391,7 +387,7 @@ function Graphs() {
         />
       </div>
 
-      {/* Visualization Area */}
+      {/* Visualization */}
       <div className="card">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -402,12 +398,10 @@ function Graphs() {
         <div className="min-h-[500px]">
           {CurrentComponent && <CurrentComponent />}
         </div>
-        
-        {/* Simple Control Panel for Step-by-step playback */}
-        <div className="mt-6">
-          <SimpleControlPanel />
-        </div>
       </div>
+
+      {/* Control Panel */}
+      <ConditionalControlPanel />
 
       {/* Educational Content */}
       <EducationalContent
@@ -467,15 +461,90 @@ function Graphs() {
 }
 
 function HashTables() {
+  const { clearData } = useApp()
+
+  useEffect(() => {
+    clearData()
+  }, [clearData])
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Hash Tables & Maps</h1>
-      <div className="card">
-        <p className="text-gray-600 mb-4">
-          Learn about hash functions, collision resolution, and map implementations.
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Hash Tables & Maps</h1>
+        <p className="text-lg text-gray-600">
+          Interactive visualizations for hash functions, collision resolution, and hash table performance characteristics.
         </p>
-        <UnderDevelopmentBanner feature="Hash table visualizations" />
       </div>
+
+      {/* Visualization */}
+      <div className="card">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Interactive Hash Table Demonstrations
+          </h2>
+        </div>
+        
+        <div className="min-h-[600px]">
+          <HashTableVisualization />
+        </div>
+      </div>
+
+      {/* Control Panel */}
+      <ConditionalControlPanel />
+
+      {/* Educational Content */}
+      <EducationalContent
+        leftContent={{
+          title: "Time Complexity Summary",
+          content: (
+            <>
+              <div className="flex justify-between">
+                <span className="font-medium">Hash Insert (avg):</span>
+                <span className="text-green-600">O(1)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Hash Search (avg):</span>
+                <span className="text-green-600">O(1)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Hash Delete (avg):</span>
+                <span className="text-green-600">O(1)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Worst Case:</span>
+                <span className="text-red-600">O(n)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Space Complexity:</span>
+                <span className="text-yellow-600">O(n)</span>
+              </div>
+            </>
+          )
+        }}
+        rightContent={{
+          title: "Common Applications",
+          content: (
+            <>
+              <div>
+                <span className="font-medium text-blue-600">Databases:</span>
+                <span className="text-gray-600 ml-2">Indexing and fast lookups</span>
+              </div>
+              <div>
+                <span className="font-medium text-purple-600">Caching:</span>
+                <span className="text-gray-600 ml-2">Web caches, memoization</span>
+              </div>
+              <div>
+                <span className="font-medium text-green-600">Symbol Tables:</span>
+                <span className="text-gray-600 ml-2">Compilers, interpreters</span>
+              </div>
+              <div>
+                <span className="font-medium text-indigo-600">Sets & Maps:</span>
+                <span className="text-gray-600 ml-2">Java HashMap, Python dict</span>
+              </div>
+            </>
+          )
+        }}
+      />
     </div>
   )
 }

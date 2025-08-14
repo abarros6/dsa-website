@@ -110,14 +110,56 @@ export default function StackVisualization() {
   }, [maxSize])
 
   const handlePush = (value) => {
-    const op = { type: 'push', value: parseInt(value) }
+    const pushValue = parseInt(value)
+    const op = { type: 'push', value: pushValue }
+    
+    if (stack.length >= maxSize) {
+      // Generate error step but don't update stack
+      const steps = generateVisualizationData(stack, op)
+      setVisualizationData(steps, 'stack-push')
+      setOperation(op)
+      return
+    }
+    
+    // Update the actual stack
+    const newStack = [...stack, pushValue]
+    setStack(newStack)
+    setHighlightedIndex(newStack.length - 1)
+    
+    // Generate steps for visualization
     const steps = generateVisualizationData(stack, op)
     setVisualizationData(steps, 'stack-push')
     setOperation(op)
+    
+    // Clear highlight after animation
+    setTimeout(() => setHighlightedIndex(null), 1000)
   }
 
   const handlePop = () => {
     const op = { type: 'pop' }
+    
+    if (stack.length === 0) {
+      // Generate error step but don't update stack
+      const steps = generateVisualizationData(stack, op)
+      setVisualizationData(steps, 'stack-pop')
+      setOperation(op)
+      return
+    }
+    
+    // Highlight the element being popped
+    setHighlightedIndex(stack.length - 1)
+    
+    // Update the actual stack after a brief delay
+    setTimeout(() => {
+      const newStack = stack.slice(0, -1)
+      setStack(newStack)
+      setHighlightedIndex(newStack.length > 0 ? newStack.length - 1 : null)
+      
+      // Clear highlight after another brief moment
+      setTimeout(() => setHighlightedIndex(null), 500)
+    }, 500)
+    
+    // Generate steps for visualization
     const steps = generateVisualizationData(stack, op)
     setVisualizationData(steps, 'stack-pop')
     setOperation(op)
@@ -125,9 +167,25 @@ export default function StackVisualization() {
 
   const handlePeek = () => {
     const op = { type: 'peek' }
+    
+    if (stack.length === 0) {
+      // Generate error step
+      const steps = generateVisualizationData(stack, op)
+      setVisualizationData(steps, 'stack-peek')
+      setOperation(op)
+      return
+    }
+    
+    // Highlight the top element
+    setHighlightedIndex(stack.length - 1)
+    
+    // Generate steps for visualization
     const steps = generateVisualizationData(stack, op)
     setVisualizationData(steps, 'stack-peek')
     setOperation(op)
+    
+    // Clear highlight after animation
+    setTimeout(() => setHighlightedIndex(null), 1500)
   }
 
   const clearStack = () => {
@@ -142,13 +200,6 @@ export default function StackVisualization() {
     setHighlightedIndex(null)
   }
 
-  useEffect(() => {
-    const currentStep = state.visualizationData[state.currentStep]
-    if (currentStep) {
-      setStack(currentStep.stack)
-      setHighlightedIndex(currentStep.highlightedIndex)
-    }
-  }, [state.currentStep, state.visualizationData])
 
   return (
     <div className="w-full">
@@ -229,71 +280,78 @@ export default function StackVisualization() {
 
       {/* Stack Visualization */}
       <div className="flex flex-col items-center space-y-4">
-        <div className="relative">
-          {/* Stack Base */}
-          <div className="w-32 h-8 bg-gray-800 rounded-b-lg"></div>
-          
-          {/* Stack Elements */}
-          <div className="flex flex-col-reverse">
-            <AnimatePresence initial={false}>
-              {stack.map((value, index) => (
-                <motion.div
-                  key={`stack-${index}-${value}`}
-                  initial={{ y: 50, opacity: 0, scale: 0.8 }}
-                  animate={{ 
-                    y: 0, 
-                    opacity: 1, 
-                    scale: 1,
-                    backgroundColor: highlightedIndex === index ? STACK_COLORS.highlight :
-                                    index === stack.length - 1 ? STACK_COLORS.top :
-                                    STACK_COLORS.element
-                  }}
-                  exit={{ y: -50, opacity: 0, scale: 0.8 }}
-                  transition={{ 
-                    duration: 0.4, 
-                    type: 'spring',
-                    damping: 15 
-                  }}
-                  className={`
-                    w-32 h-12 border-2 border-white flex items-center justify-center
-                    text-white font-bold text-lg shadow-md
-                    ${highlightedIndex === index ? 'ring-4 ring-yellow-300 scale-105' : ''}
-                  `}
-                  style={{
-                    backgroundColor: highlightedIndex === index ? STACK_COLORS.highlight :
-                                    index === stack.length - 1 ? STACK_COLORS.top :
-                                    STACK_COLORS.element
-                  }}
-                >
-                  {value}
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-          
-          {/* Stack Empty Message */}
-          {stack.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="absolute top-0 w-32 h-20 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-t-lg bg-gray-50"
-            >
-              <span className="text-gray-500 text-sm">Empty</span>
-            </motion.div>
-          )}
-          
-          {/* Top Indicator */}
-          {stack.length > 0 && (
+        {stack.length === 0 ? (
+          /* Empty Stack State */
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-64 h-32 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg bg-gray-50"
+          >
+            <div className="text-center">
+              <span className="text-gray-500 text-lg">📚</span>
+              <p className="text-gray-500 text-sm mt-1">Stack is empty</p>
+              <p className="text-gray-400 text-xs">Push elements to see the stack</p>
+            </div>
+          </motion.div>
+        ) : (
+          /* Stack with Elements */
+          <div className="relative">
+            {/* Stack Elements */}
+            <div className="flex flex-col-reverse relative z-10">
+              <AnimatePresence initial={false}>
+                {stack.map((value, index) => (
+                  <motion.div
+                    key={`stack-${index}-${value}`}
+                    initial={{ y: 50, opacity: 0, scale: 0.8 }}
+                    animate={{ 
+                      y: 0, 
+                      opacity: 1, 
+                      scale: 1,
+                      backgroundColor: highlightedIndex === index ? STACK_COLORS.highlight :
+                                      index === stack.length - 1 ? STACK_COLORS.top :
+                                      STACK_COLORS.element
+                    }}
+                    exit={{ y: -50, opacity: 0, scale: 0.8 }}
+                    transition={{ 
+                      duration: 0.4, 
+                      type: 'spring',
+                      damping: 15 
+                    }}
+                    className={`
+                      w-32 h-12 border-2 border-white flex items-center justify-center
+                      text-white font-bold text-lg shadow-md
+                      ${highlightedIndex === index ? 'ring-4 ring-yellow-300 scale-105' : ''}
+                    `}
+                    style={{
+                      backgroundColor: highlightedIndex === index ? STACK_COLORS.highlight :
+                                      index === stack.length - 1 ? STACK_COLORS.top :
+                                      STACK_COLORS.element
+                    }}
+                  >
+                    {value}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+            
+            {/* Stack Base */}
+            <div className="w-32 h-8 bg-gray-800 rounded-b-lg absolute bottom-0 left-1/2 transform -translate-x-1/2"></div>
+            
+            {/* Top Indicator */}
             <motion.div
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              className="absolute -left-16 top-0 flex items-center"
+              className="absolute -left-16 flex items-center"
+              style={{ 
+                top: '0px', // Position to align with the topmost element (last in array, first visually)
+                height: '48px' // Match the height of stack elements
+              }}
             >
               <span className="text-sm font-medium text-green-600">TOP</span>
               <div className="w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent border-l-green-600 ml-2"></div>
             </motion.div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Stack Info */}
         <div className="flex space-x-6 text-sm text-gray-600 mt-4">

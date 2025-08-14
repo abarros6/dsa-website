@@ -1,7 +1,7 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useApp } from '../contexts/AppContext'
-import SimpleControlPanel from '../components/SimpleControlPanel'
+import ConditionalControlPanel from '../components/ConditionalControlPanel'
 import BubbleSortVisualization from '../components/visualizations/BubbleSortVisualizationClean'
 import SelectionSortVisualization from '../components/visualizations/SelectionSortVisualizationClean'
 import InsertionSortVisualization from '../components/visualizations/InsertionSortVisualizationClean'
@@ -12,7 +12,6 @@ import BinarySearchVisualization from '../components/visualizations/BinarySearch
 import HashSearchVisualization from '../components/visualizations/HashSearchVisualization'
 import TopicOverviewGrid from '../components/common/TopicOverviewGrid'
 import BreadcrumbNavigation from '../components/common/BreadcrumbNavigation'
-import UnderDevelopmentBanner from '../components/common/UnderDevelopmentBanner'
 import PseudocodeDisplay from '../components/common/PseudocodeDisplay'
 import ComparisonTable from '../components/common/ComparisonTable'
 import EducationalContent from '../components/common/EducationalContent'
@@ -29,18 +28,6 @@ const topics = [
     path: 'sorting',
     description: 'Bubble, Selection, Insertion, Merge, Quick Sort',
     icon: '🔄'
-  },
-  {
-    title: 'Tree Algorithms',
-    path: 'trees',
-    description: 'Tree Construction, Balancing, Traversals',
-    icon: '🌲'
-  },
-  {
-    title: 'Graph Algorithms',
-    path: 'graphs',
-    description: 'BFS, DFS, Dijkstra, MST Algorithms',
-    icon: '🕷️'
   }
 ]
 
@@ -186,7 +173,7 @@ function SearchingAlgorithms() {
         </div>
       </div>
 
-      {/* Visualization Area */}
+      {/* Visualization */}
       <div className="card">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -198,22 +185,20 @@ function SearchingAlgorithms() {
         <div className="min-h-[400px]">
           {CurrentComponent && <CurrentComponent />}
         </div>
-        
-        {/* Simple Control Panel for Step-by-step playback */}
-        {currentAlgorithm !== 'hash' && (
-          <div className="mt-2">
-            <SimpleControlPanel />
-          </div>
-        )}
+      </div>
 
-        {/* Pseudocode Section */}
-        {currentAlgorithmInfo && (
+      {/* Control Panel */}
+      <ConditionalControlPanel forceHide={currentAlgorithm === 'hash'} />
+
+      {/* Pseudocode Section */}
+      {currentAlgorithmInfo && (
+        <div className="card">
           <PseudocodeDisplay
             title={currentAlgorithmInfo.title}
             pseudocode={getSearchPseudocode(currentAlgorithm)}
           />
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Algorithm Comparison Table */}
       <ComparisonTable
@@ -464,7 +449,7 @@ function SortingAlgorithms() {
         </div>
       </div>
 
-      {/* Visualization Area */}
+      {/* Visualization */}
       <div className="card">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -476,20 +461,20 @@ function SortingAlgorithms() {
         <div className="min-h-[400px]">
           {CurrentComponent && <CurrentComponent />}
         </div>
-        
-        {/* Simple Control Panel for Step-by-step playback */}
-        <div className="mt-2">
-          <SimpleControlPanel />
-        </div>
+      </div>
 
-        {/* Pseudocode Section */}
-        {currentAlgorithmInfo && (
+      {/* Control Panel */}
+      <ConditionalControlPanel />
+
+      {/* Pseudocode Section */}
+      {currentAlgorithmInfo && (
+        <div className="card">
           <PseudocodeDisplay
             title={currentAlgorithmInfo.title}
             pseudocode={getSortingPseudocode(currentAlgorithm)}
           />
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Algorithm Comparison Table */}
       <ComparisonTable
@@ -547,33 +532,6 @@ function SortingAlgorithms() {
   )
 }
 
-function TreeAlgorithms() {
-  return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Tree Algorithms</h1>
-      <div className="card">
-        <p className="text-gray-600 mb-4">
-          Explore tree construction, balancing operations, and traversal algorithms.
-        </p>
-        <UnderDevelopmentBanner feature="Tree algorithm visualizations" />
-      </div>
-    </div>
-  )
-}
-
-function GraphAlgorithms() {
-  return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Graph Algorithms</h1>
-      <div className="card">
-        <p className="text-gray-600 mb-4">
-          Visualize graph traversals, shortest path algorithms, and minimum spanning trees.
-        </p>
-        <UnderDevelopmentBanner feature="Graph algorithm visualizations" />
-      </div>
-    </div>
-  )
-}
 
 export default function Algorithms() {
   const location = useLocation()
@@ -589,8 +547,6 @@ export default function Algorithms() {
         <Route path="/" element={<TopicOverview />} />
         <Route path="/searching" element={<SearchingAlgorithms />} />
         <Route path="/sorting" element={<SortingAlgorithms />} />
-        <Route path="/trees" element={<TreeAlgorithms />} />
-        <Route path="/graphs" element={<GraphAlgorithms />} />
       </Routes>
     </div>
   )

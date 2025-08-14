@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useApp } from '../../contexts/AppContext'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
 import Quiz from '../Quiz'
+import CollapsibleSection from '../common/CollapsibleSection'
 
 const COLLECTIONS_COLORS = {
   arraylist: '#3b82f6',
@@ -141,159 +141,20 @@ System.out.println(map.get("apple"));`,
 ]
 
 export default function CollectionsVisualization() {
-  const { state, setVisualizationData } = useApp()
   const [currentDemo, setCurrentDemo] = useState('arraylist')
-  const [arrayListData, setArrayListData] = useState([])
-  const [linkedListData, setLinkedListData] = useState([])
-  const [hashMapData, setHashMapData] = useState({})
+  const [arrayListData, setArrayListData] = useState(['A', 'B', 'C'])
+  const [linkedListData, setLinkedListData] = useState(['A', 'B', 'C'])
+  const [hashMapData, setHashMapData] = useState({ apple: 5, banana: 3, orange: 8 })
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
 
-  const generateVisualizationSteps = useCallback((demo) => {
-    const steps = []
-    
-    switch (demo) {
-      case 'arraylist':
-        steps.push({
-          demo: 'arraylist',
-          step: 0,
-          description: 'ArrayList - Dynamic Array Implementation',
-          operation: 'collections-demo',
-          data: []
-        })
-        
-        let currentArray = []
-        ARRAYLIST_OPERATIONS.forEach((op, index) => {
-          if (op.operation === 'add') {
-            currentArray.push(op.value)
-          } else if (op.operation === 'insert') {
-            currentArray.splice(op.index, 0, op.value)
-          } else if (op.operation === 'remove') {
-            currentArray.splice(op.index, 1)
-          }
-          
-          steps.push({
-            demo: 'arraylist',
-            step: index + 1,
-            description: op.description,
-            operation: 'collections-demo',
-            data: [...currentArray],
-            highlightIndex: op.operation === 'insert' ? op.index : op.operation === 'remove' ? op.index : currentArray.length - 1,
-            operationType: op.operation
-          })
-        })
-        break
-        
-      case 'linkedlist':
-        steps.push({
-          demo: 'linkedlist',
-          step: 0,
-          description: 'LinkedList - Doubly Linked List Implementation',
-          operation: 'collections-demo',
-          data: []
-        })
-        
-        let currentList = []
-        LINKEDLIST_OPERATIONS.forEach((op, index) => {
-          if (op.operation === 'addFirst') {
-            currentList.unshift(op.value)
-          } else if (op.operation === 'addLast') {
-            currentList.push(op.value)
-          } else if (op.operation === 'addAfter') {
-            const afterIndex = currentList.indexOf(op.afterValue)
-            if (afterIndex !== -1) {
-              currentList.splice(afterIndex + 1, 0, op.value)
-            }
-          } else if (op.operation === 'removeFirst') {
-            currentList.shift()
-          }
-          
-          steps.push({
-            demo: 'linkedlist',
-            step: index + 1,
-            description: op.description,
-            operation: 'collections-demo',
-            data: [...currentList],
-            operationType: op.operation,
-            highlightValue: op.value || currentList[0]
-          })
-        })
-        break
-        
-      case 'hashmap':
-        steps.push({
-          demo: 'hashmap',
-          step: 0,
-          description: 'HashMap - Hash Table Implementation',
-          operation: 'collections-demo',
-          data: {},
-          buckets: Array(4).fill([])
-        })
-        
-        let currentMap = {}
-        let buckets = [[], [], [], []]
-        
-        HASHMAP_OPERATIONS.forEach((op, index) => {
-          if (op.operation === 'put') {
-            currentMap[op.key] = op.value
-            const bucketIndex = op.hash % 4
-            if (!buckets[bucketIndex].some(item => item.key === op.key)) {
-              buckets[bucketIndex] = [...buckets[bucketIndex], { key: op.key, value: op.value }]
-            } else {
-              buckets[bucketIndex] = buckets[bucketIndex].map(item => 
-                item.key === op.key ? { key: op.key, value: op.value } : item
-              )
-            }
-          } else if (op.operation === 'remove') {
-            delete currentMap[op.key]
-            buckets = buckets.map(bucket => bucket.filter(item => item.key !== op.key))
-          }
-          
-          steps.push({
-            demo: 'hashmap',
-            step: index + 1,
-            description: op.description,
-            operation: 'collections-demo',
-            data: { ...currentMap },
-            buckets: buckets.map(bucket => [...bucket]),
-            operationType: op.operation,
-            highlightKey: op.key,
-            highlightBucket: op.operation === 'put' ? op.hash % 4 : undefined
-          })
-        })
-        break
-    }
-    
-    return steps
-  }, [])
 
   const handleDemoChange = (demo) => {
     setCurrentDemo(demo)
-    const steps = generateVisualizationSteps(demo)
-    setVisualizationData(steps, `collections-${demo}`)
-    
-    // Reset data
-    setArrayListData([])
-    setLinkedListData([])
-    setHashMapData({})
     setHighlightedIndex(-1)
   }
 
-  useEffect(() => {
-    const currentStep = state.visualizationData[state.currentStep]
-    if (currentStep && state.visualizationContext?.startsWith('collections-')) {
-      if (currentStep.demo === 'arraylist') {
-        setArrayListData(currentStep.data || [])
-        setHighlightedIndex(currentStep.highlightIndex ?? -1)
-      } else if (currentStep.demo === 'linkedlist') {
-        setLinkedListData(currentStep.data || [])
-      } else if (currentStep.demo === 'hashmap') {
-        setHashMapData(currentStep.data || {})
-      }
-    }
-  }, [state.currentStep, state.visualizationData, state.visualizationContext])
 
   const renderArrayList = () => {
-    const currentStep = state.visualizationData[state.currentStep]
     
     return (
       <div className="w-full bg-white rounded-lg shadow-sm p-6">
@@ -359,23 +220,6 @@ export default function CollectionsVisualization() {
             </div>
           </div>
 
-          {/* Current Operation */}
-          {currentStep?.operationType && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-3 bg-gray-100 rounded-lg text-center"
-            >
-              <span className="font-medium">Current Operation: </span>
-              <span className={`px-2 py-1 rounded text-sm ${
-                currentStep.operationType === 'add' ? 'bg-green-100 text-green-800' :
-                currentStep.operationType === 'insert' ? 'bg-yellow-100 text-yellow-800' :
-                'bg-red-100 text-red-800'
-              }`}>
-                {currentStep.operationType.toUpperCase()}
-              </span>
-            </motion.div>
-          )}
           
           {/* Comprehensive ArrayList Education */}
           <div className="mt-8 space-y-4">
@@ -595,8 +439,13 @@ public class ArrayList<E> implements List<E> {
   }
 
   const renderHashMap = () => {
-    const currentStep = state.visualizationData[state.currentStep]
-    const buckets = currentStep?.buckets || [[], [], [], []]
+    // Static demonstration buckets
+    const buckets = [
+      [{ key: 'apple', value: 5 }],
+      [],
+      [{ key: 'banana', value: 3 }],
+      [{ key: 'orange', value: 8 }]
+    ]
     
     return (
       <div className="w-full bg-white rounded-lg shadow-sm p-6">
@@ -610,14 +459,7 @@ public class ArrayList<E> implements List<E> {
               {buckets.map((bucket, bucketIndex) => (
                 <motion.div
                   key={bucketIndex}
-                  className={`border-2 rounded-lg p-3 min-h-[120px] ${
-                    currentStep?.highlightBucket === bucketIndex 
-                      ? 'border-yellow-500 bg-yellow-50' 
-                      : 'border-gray-300 bg-gray-50'
-                  }`}
-                  animate={{
-                    borderColor: currentStep?.highlightBucket === bucketIndex ? '#f59e0b' : '#d1d5db'
-                  }}
+                  className="border-2 border-gray-300 bg-gray-50 rounded-lg p-3 min-h-[120px]"
                 >
                   <div className="text-center font-medium mb-2">Bucket {bucketIndex}</div>
                   <div className="space-y-1">
@@ -629,11 +471,7 @@ public class ArrayList<E> implements List<E> {
                           key={`${item.key}-${itemIndex}`}
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className={`p-2 rounded text-xs border ${
-                            currentStep?.highlightKey === item.key
-                              ? 'bg-yellow-200 border-yellow-400'
-                              : 'bg-white border-gray-200'
-                          }`}
+                          className="p-2 rounded text-xs border bg-white border-gray-200"
                         >
                           <div className="font-medium">{item.key}</div>
                           <div className="text-gray-600">→ {item.value}</div>
@@ -652,11 +490,7 @@ public class ArrayList<E> implements List<E> {
             <div className="text-sm text-blue-700">
               <code>bucketIndex = key.hashCode() % buckets.length</code>
               <div className="mt-2">
-                {currentStep?.highlightKey && (
-                  <div>
-                    Current: "{currentStep.highlightKey}" → bucket {currentStep.highlightBucket}
-                  </div>
-                )}
+                Example: "apple" → bucket 0, "banana" → bucket 2
               </div>
             </div>
           </div>
@@ -761,8 +595,12 @@ public class ArrayList<E> implements List<E> {
 
       {/* Comprehensive Collections Education - Static Content Below */}
       <div className="mt-8 space-y-4">
-        <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-          <h3 className="font-semibold text-purple-800 mb-3">Java Collections Framework Architecture</h3>
+        <CollapsibleSection 
+          title="Java Collections Framework Architecture" 
+          bgColor="bg-purple-50" 
+          borderColor="border-purple-200" 
+          titleColor="text-purple-800"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <h4 className="font-semibold text-purple-800 mb-2">📋 Collection Hierarchy</h4>
@@ -789,10 +627,14 @@ public class ArrayList<E> implements List<E> {
               </div>
             </div>
           </div>
-        </div>
+        </CollapsibleSection>
         
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="font-semibold text-blue-800 mb-2">🎯 Learning Objectives</h4>
+        <CollapsibleSection 
+          title="🎯 Learning Objectives" 
+          bgColor="bg-blue-50" 
+          borderColor="border-blue-200" 
+          titleColor="text-blue-800"
+        >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-blue-700">
             <ul className="space-y-1">
               <li>• Understand time complexity trade-offs</li>
@@ -810,10 +652,14 @@ public class ArrayList<E> implements List<E> {
               <li>• Understand concurrent collections</li>
             </ul>
           </div>
-        </div>
+        </CollapsibleSection>
         
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-          <h4 className="font-semibold text-amber-800 mb-2">⚡ Performance Comparison</h4>
+        <CollapsibleSection 
+          title="⚡ Performance Comparison" 
+          bgColor="bg-amber-50" 
+          borderColor="border-amber-200" 
+          titleColor="text-amber-800"
+        >
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -834,25 +680,9 @@ public class ArrayList<E> implements List<E> {
             </table>
             <p className="text-xs text-amber-600 mt-2">* If you have a reference to the node</p>
           </div>
-        </div>
+        </CollapsibleSection>
       </div>
 
-      {/* Current Operation Description */}
-      <AnimatePresence>
-        {state.visualizationData.length > 0 && state.visualizationData[state.currentStep] && 
-        state.visualizationContext?.startsWith('collections-') && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center"
-          >
-            <p className="text-blue-800 font-medium">
-              {state.visualizationData[state.currentStep].description}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }

@@ -34,8 +34,7 @@ const navigationItems = [
     icon: '📈',
     children: [
       { name: 'Complexity Analysis', path: '/algorithm-analysis/complexity' },
-      { name: 'Performance Measurement', path: '/algorithm-analysis/performance' },
-      { name: 'Trade-offs', path: '/algorithm-analysis/tradeoffs' }
+      { name: 'Performance Measurement', path: '/algorithm-analysis/performance' }
     ]
   },
   {
@@ -44,9 +43,7 @@ const navigationItems = [
     icon: '🔄',
     children: [
       { name: 'Searching', path: '/algorithms/searching' },
-      { name: 'Sorting', path: '/algorithms/sorting' },
-      { name: 'Tree Algorithms', path: '/algorithms/trees' },
-      { name: 'Graph Algorithms', path: '/algorithms/graphs' }
+      { name: 'Sorting', path: '/algorithms/sorting' }
     ]
   }
 ]

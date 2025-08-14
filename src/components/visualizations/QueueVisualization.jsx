@@ -159,14 +159,58 @@ export default function QueueVisualization() {
   }, [maxSize])
 
   const handleEnqueue = (value) => {
-    const op = { type: 'enqueue', value: parseInt(value) }
+    const enqueueValue = parseInt(value)
+    const op = { type: 'enqueue', value: enqueueValue }
+    
+    if (queue.length >= maxSize) {
+      // Generate error step but don't update queue
+      const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
+      setVisualizationData(steps, 'queue-enqueue')
+      setOperation(op)
+      return
+    }
+    
+    // Update the actual queue
+    const newQueue = [...queue, enqueueValue]
+    const newRear = newQueue.length - 1
+    setQueue(newQueue)
+    setRearIndex(newRear)
+    setHighlightedIndex(newRear)
+    
+    // Generate steps for visualization
     const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
     setVisualizationData(steps, 'queue-enqueue')
     setOperation(op)
+    
+    // Clear highlight after animation
+    setTimeout(() => setHighlightedIndex(null), 1000)
   }
 
   const handleDequeue = () => {
     const op = { type: 'dequeue' }
+    
+    if (queue.length === 0) {
+      // Generate error step but don't update queue
+      const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
+      setVisualizationData(steps, 'queue-dequeue')
+      setOperation(op)
+      return
+    }
+    
+    // Highlight the element being dequeued
+    setHighlightedIndex(0)
+    
+    // Update the actual queue after a brief delay
+    setTimeout(() => {
+      const newQueue = queue.slice(1)
+      const newRear = newQueue.length - 1
+      setQueue(newQueue)
+      setRearIndex(newRear)
+      setFrontIndex(0) // Always 0 for simple queue
+      setHighlightedIndex(null)
+    }, 500)
+    
+    // Generate steps for visualization
     const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
     setVisualizationData(steps, 'queue-dequeue')
     setOperation(op)
@@ -174,16 +218,48 @@ export default function QueueVisualization() {
 
   const handleFront = () => {
     const op = { type: 'front' }
+    
+    if (queue.length === 0) {
+      // Generate error step
+      const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
+      setVisualizationData(steps, 'queue-front')
+      setOperation(op)
+      return
+    }
+    
+    // Highlight the front element
+    setHighlightedIndex(0)
+    
+    // Generate steps for visualization
     const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
     setVisualizationData(steps, 'queue-front')
     setOperation(op)
+    
+    // Clear highlight after animation
+    setTimeout(() => setHighlightedIndex(null), 1500)
   }
 
   const handleRear = () => {
     const op = { type: 'rear' }
+    
+    if (queue.length === 0) {
+      // Generate error step
+      const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
+      setVisualizationData(steps, 'queue-rear')
+      setOperation(op)
+      return
+    }
+    
+    // Highlight the rear element
+    setHighlightedIndex(queue.length - 1)
+    
+    // Generate steps for visualization
     const steps = generateVisualizationData(queue, frontIndex, rearIndex, op)
     setVisualizationData(steps, 'queue-rear')
     setOperation(op)
+    
+    // Clear highlight after animation
+    setTimeout(() => setHighlightedIndex(null), 1500)
   }
 
   const clearQueue = () => {
@@ -202,15 +278,6 @@ export default function QueueVisualization() {
     setHighlightedIndex(null)
   }
 
-  useEffect(() => {
-    const currentStep = state.visualizationData[state.currentStep]
-    if (currentStep) {
-      setQueue(currentStep.queue)
-      setFrontIndex(currentStep.frontIndex)
-      setRearIndex(currentStep.rearIndex)
-      setHighlightedIndex(currentStep.highlightedIndex)
-    }
-  }, [state.currentStep, state.visualizationData])
 
   return (
     <div className="w-full">
