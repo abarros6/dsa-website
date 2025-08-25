@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Quiz from '../Quiz'
 import CollapsibleSection from '../common/CollapsibleSection'
+import CodeHighlight from '../common/CodeHighlight'
 
 const JAVA_COLORS = {
   generic: '#3b82f6',
@@ -176,6 +177,14 @@ list.add(123); // What happens here?`,
 export default function JavaFeaturesVisualization() {
   const [currentDemo, setCurrentDemo] = useState('generics')
   const [genericsData, setGenericsData] = useState({ type: 'ArrayList<String>', items: [] })
+  const [currentOperation, setCurrentOperation] = useState(null)
+  const [exceptionStep, setExceptionStep] = useState(0)
+  const [currentLine, setCurrentLine] = useState(null)
+  const [status, setStatus] = useState('executing')
+  const [currentCall, setCurrentCall] = useState(null)
+  const [recursionStep, setRecursionStep] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [speed, setSpeed] = useState(1000)
   const [callStack] = useState([
     { n: 4, result: null, status: 'active' },
     { n: 3, result: null, status: 'waiting' },
@@ -186,6 +195,114 @@ export default function JavaFeaturesVisualization() {
 
   const handleDemoChange = (demo) => {
     setCurrentDemo(demo)
+    resetDemo(demo)
+  }
+
+  const resetDemo = (demo) => {
+    setIsPlaying(false)
+    if (demo === 'generics') {
+      setCurrentOperation(null)
+      setGenericsData({ type: 'ArrayList<String>', items: [] })
+    } else if (demo === 'exceptions') {
+      setExceptionStep(0)
+      setCurrentLine(null)
+      setStatus('executing')
+    } else if (demo === 'recursion') {
+      setRecursionStep(0)
+      setCurrentCall(null)
+    }
+  }
+
+  const playDemo = () => {
+    if (currentDemo === 'exceptions') {
+      playExceptionDemo()
+    } else if (currentDemo === 'recursion') {
+      playRecursionDemo()
+    }
+  }
+
+  const playExceptionDemo = () => {
+    if (isPlaying) return
+    setIsPlaying(true)
+    setExceptionStep(0)
+    
+    const steps = EXCEPTION_EXAMPLE.steps
+    let currentStepIndex = 0
+    
+    const interval = setInterval(() => {
+      if (currentStepIndex < steps.length) {
+        const step = steps[currentStepIndex]
+        setExceptionStep(currentStepIndex + 1)
+        setCurrentLine(step.line)
+        setStatus(step.status)
+        currentStepIndex++
+      } else {
+        clearInterval(interval)
+        setIsPlaying(false)
+      }
+    }, speed)
+  }
+
+  const playRecursionDemo = () => {
+    if (isPlaying) return
+    setIsPlaying(true)
+    setRecursionStep(0)
+    
+    const calls = RECURSION_EXAMPLE.calls
+    let currentCallIndex = 0
+    
+    const interval = setInterval(() => {
+      if (currentCallIndex < calls.length) {
+        const call = calls[currentCallIndex]
+        setRecursionStep(currentCallIndex + 1)
+        setCurrentCall(call)
+        currentCallIndex++
+      } else {
+        clearInterval(interval)
+        setIsPlaying(false)
+      }
+    }, speed)
+  }
+
+  const nextStep = () => {
+    if (currentDemo === 'exceptions') {
+      const nextStepIndex = Math.min(exceptionStep + 1, EXCEPTION_EXAMPLE.steps.length)
+      setExceptionStep(nextStepIndex)
+      if (nextStepIndex > 0) {
+        const step = EXCEPTION_EXAMPLE.steps[nextStepIndex - 1]
+        setCurrentLine(step.line)
+        setStatus(step.status)
+      }
+    } else if (currentDemo === 'recursion') {
+      const nextStepIndex = Math.min(recursionStep + 1, RECURSION_EXAMPLE.calls.length)
+      setRecursionStep(nextStepIndex)
+      if (nextStepIndex > 0) {
+        setCurrentCall(RECURSION_EXAMPLE.calls[nextStepIndex - 1])
+      }
+    }
+  }
+
+  const prevStep = () => {
+    if (currentDemo === 'exceptions') {
+      const prevStepIndex = Math.max(exceptionStep - 1, 0)
+      setExceptionStep(prevStepIndex)
+      if (prevStepIndex > 0) {
+        const step = EXCEPTION_EXAMPLE.steps[prevStepIndex - 1]
+        setCurrentLine(step.line)
+        setStatus(step.status)
+      } else {
+        setCurrentLine(null)
+        setStatus('executing')
+      }
+    } else if (currentDemo === 'recursion') {
+      const prevStepIndex = Math.max(recursionStep - 1, 0)
+      setRecursionStep(prevStepIndex)
+      if (prevStepIndex > 0) {
+        setCurrentCall(RECURSION_EXAMPLE.calls[prevStepIndex - 1])
+      } else {
+        setCurrentCall(null)
+      }
+    }
   }
 
 
@@ -206,19 +323,25 @@ export default function JavaFeaturesVisualization() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
                 <h5 className="font-semibold text-indigo-800">Before Generics (Java 1.4):</h5>
-                <div className="bg-white p-2 rounded border font-mono text-xs">
-                  List list = new ArrayList();<br/>
-                  list.add("Hello");<br/>
-                  String s = (String) list.get(0); // Casting required
-                </div>
+                <CodeHighlight
+                  code={`List list = new ArrayList();
+list.add("Hello");
+String s = (String) list.get(0); // Casting required`}
+                  language="java"
+                  showLineNumbers={false}
+                  className="text-xs"
+                />
               </div>
               <div>
                 <h5 className="font-semibold text-indigo-800">With Generics (Java 5+):</h5>
-                <div className="bg-white p-2 rounded border font-mono text-xs">
-                  List&lt;String&gt; list = new ArrayList&lt;&gt;();<br/>
-                  list.add("Hello");<br/>
-                  String s = list.get(0); // No casting needed!
-                </div>
+                <CodeHighlight
+                  code={`List<String> list = new ArrayList<>();
+list.add("Hello");
+String s = list.get(0); // No casting needed!`}
+                  language="java"
+                  showLineNumbers={false}
+                  className="text-xs"
+                />
               </div>
             </div>
           </div>
@@ -328,10 +451,10 @@ export default function JavaFeaturesVisualization() {
           
           {/* Advanced Generic Concepts */}
           <div className="mt-8 space-y-4">
-            <div className="p-4 bg-gray-900 text-gray-100 rounded-lg">
-              <h5 className="font-semibold text-yellow-400 mb-2">Advanced Generics Examples:</h5>
-              <pre className="text-sm overflow-x-auto">
-                <code>{`// Generic class with multiple type parameters
+            <div>
+              <h5 className="font-semibold text-gray-800 mb-2">Advanced Generics Examples:</h5>
+              <CodeHighlight
+                code={`// Generic class with multiple type parameters
 public class Pair<T, U> {
     private T first;
     private U second;
@@ -375,8 +498,10 @@ Pair<String, Integer> nameAge = new Pair<>("Alice", 25);
 NumberContainer<Double> doubleContainer = new NumberContainer<>(3.14);
 List<Integer> integers = Arrays.asList(1, 2, 3);
 Integer first = getFirst(integers); // Type inference
-printNumbers(integers); // Works with any Number subtype`}</code>
-              </pre>
+printNumbers(integers); // Works with any Number subtype`}
+                language="java"
+                maxHeight="400px"
+              />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -431,37 +556,16 @@ printNumbers(integers); // Works with any Number subtype`}</code>
       <div className="w-full bg-white rounded-lg shadow-sm p-6">
         <h3 className="text-lg font-semibold mb-4 text-center">Exception Handling - Try-Catch-Finally</h3>
         
+        {renderControls()}
+        
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Code Block */}
-            <div className="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm">
-              <div className="space-y-1">
-                <div className={`p-1 rounded ${currentLine === 2 ? 'bg-blue-600' : ''}`}>
-                  <span className="text-blue-400">try</span> {'{'}
-                </div>
-                <div className={`p-1 rounded ml-4 ${currentLine === 2 && status === 'executing' ? 'bg-blue-600' : currentLine === 2 && status === 'exception' ? 'bg-red-600' : ''}`}>
-                  <span className="text-gray-400">int</span> result = divide(<span className="text-green-400">10</span>, <span className="text-red-400">0</span>);
-                </div>
-                <div className="ml-4 text-gray-500">
-                  System.out.println(<span className="text-green-400">"Result: "</span> + result);
-                </div>
-                <div>{'}'}</div>
-                <div className={`p-1 rounded ${currentLine === 4 || currentLine === 5 ? 'bg-yellow-600' : ''}`}>
-                  <span className="text-yellow-400">catch</span> (ArithmeticException e) {'{'}
-                </div>
-                <div className={`p-1 rounded ml-4 ${currentLine === 5 ? 'bg-yellow-600' : ''}`}>
-                  System.out.println(<span className="text-green-400">"Error: "</span> + e.getMessage());
-                </div>
-                <div>{'}'}</div>
-                <div className={`p-1 rounded ${currentLine === 6 ? 'bg-green-600' : ''}`}>
-                  <span className="text-green-400">finally</span> {'{'}
-                </div>
-                <div className={`p-1 rounded ml-4 ${currentLine === 6 ? 'bg-green-600' : ''}`}>
-                  System.out.println(<span className="text-green-400">"Cleanup code executed"</span>);
-                </div>
-                <div>{'}'}</div>
-              </div>
-            </div>
+            <CodeHighlight
+              code={EXCEPTION_EXAMPLE.code}
+              language="java"
+              highlightLine={currentLine}
+            />
 
             {/* Execution Flow */}
             <div className="space-y-4">
@@ -506,27 +610,88 @@ printNumbers(integers); // Works with any Number subtype`}</code>
     )
   }
 
+  const renderControls = () => {
+    if (currentDemo === 'generics') return null
+    
+    const totalSteps = currentDemo === 'exceptions' 
+      ? EXCEPTION_EXAMPLE.steps.length 
+      : RECURSION_EXAMPLE.calls.length
+    const currentStepNum = currentDemo === 'exceptions' ? exceptionStep : recursionStep
+
+    return (
+      <div className="mb-6 p-4 bg-gray-100 rounded-lg">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="font-semibold text-gray-800">Interactive Controls</h4>
+          <div className="text-sm text-gray-600">
+            Step {currentStepNum} of {totalSteps}
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => resetDemo(currentDemo)}
+            className="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+          >
+            ⏮️ Reset
+          </button>
+          
+          <button
+            onClick={prevStep}
+            disabled={currentStepNum === 0}
+            className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          >
+            ⏪ Previous
+          </button>
+          
+          <button
+            onClick={isPlaying ? () => setIsPlaying(false) : playDemo}
+            className={`px-4 py-2 rounded text-white transition-colors ${
+              isPlaying ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
+            }`}
+          >
+            {isPlaying ? '⏸️ Pause' : '▶️ Play'}
+          </button>
+          
+          <button
+            onClick={nextStep}
+            disabled={currentStepNum === totalSteps}
+            className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          >
+            ⏩ Next
+          </button>
+          
+          <div className="flex items-center space-x-2 ml-4">
+            <label className="text-sm text-gray-600">Speed:</label>
+            <select
+              value={speed}
+              onChange={(e) => setSpeed(Number(e.target.value))}
+              className="px-2 py-1 border rounded text-sm"
+            >
+              <option value={2000}>Slow</option>
+              <option value={1000}>Normal</option>
+              <option value={500}>Fast</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const renderRecursion = () => {
 
     return (
       <div className="w-full bg-white rounded-lg shadow-sm p-6">
         <h3 className="text-lg font-semibold mb-4 text-center">Recursion - factorial(4) Call Stack</h3>
         
+        {renderControls()}
+        
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Function Definition */}
-            <div className="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm">
-              <div className="space-y-1">
-                <div className="text-blue-400">factorial(n) {'{' }</div>
-                <div className="ml-4">
-                  <span className="text-purple-400">if</span> (n &lt;= <span className="text-green-400">1</span>) <span className="text-purple-400">return</span> <span className="text-green-400">1</span>;
-                </div>
-                <div className="ml-4">
-                  <span className="text-purple-400">return</span> n * factorial(n - <span className="text-green-400">1</span>);
-                </div>
-                <div>{'}'}</div>
-              </div>
-            </div>
+            <CodeHighlight
+              code={RECURSION_EXAMPLE.function}
+              language="java"
+            />
 
             {/* Call Stack Visualization */}
             <div className="space-y-2">
@@ -657,23 +822,32 @@ printNumbers(integers); // Works with any Number subtype`}</code>
             <div className="space-y-2">
               <h4 className="font-semibold text-green-800">📦 Generics</h4>
               <p className="text-green-700">Type parameterization introduced in Java 5. Provides compile-time type safety and eliminates the need for explicit casting.</p>
-              <div className="bg-white p-2 rounded text-xs font-mono">
-                List&lt;String&gt; list = new ArrayList&lt;&gt;();
-              </div>
+              <CodeHighlight
+                code={`List<String> list = new ArrayList<>();`}
+                language="java"
+                showLineNumbers={false}
+                className="text-xs"
+              />
             </div>
             <div className="space-y-2">
               <h4 className="font-semibold text-green-800">⚠️ Exception Handling</h4>
               <p className="text-green-700">Structured approach to handling runtime errors. Separates normal program flow from error handling logic.</p>
-              <div className="bg-white p-2 rounded text-xs font-mono">
-                try {'{'}...{'}'} catch(Exception e) {'{'}...{'}'}
-              </div>
+              <CodeHighlight
+                code={`try { ... } catch(Exception e) { ... }`}
+                language="java"
+                showLineNumbers={false}
+                className="text-xs"
+              />
             </div>
             <div className="space-y-2">
               <h4 className="font-semibold text-green-800">🔄 Recursion</h4>
               <p className="text-green-700">A programming technique where a function calls itself. Essential for tree traversals, divide-and-conquer algorithms.</p>
-              <div className="bg-white p-2 rounded text-xs font-mono">
-                factorial(n) = n * factorial(n-1)
-              </div>
+              <CodeHighlight
+                code={`factorial(n) = n * factorial(n-1)`}
+                language="java"
+                showLineNumbers={false}
+                className="text-xs"
+              />
             </div>
           </div>
         </CollapsibleSection>

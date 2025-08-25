@@ -99,6 +99,9 @@ function JavaFeatures() {
           <h2 className="text-2xl font-bold text-gray-900">
             Interactive Java Feature Demonstrations
           </h2>
+          <p className="text-gray-600 mt-2">
+            Explore interactive step-by-step visualizations for advanced Java concepts including exception handling and recursion, plus a comprehensive quiz.
+          </p>
         </div>
         
         <div className="min-h-[600px]">
